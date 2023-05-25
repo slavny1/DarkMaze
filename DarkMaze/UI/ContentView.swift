@@ -21,7 +21,7 @@ struct ContentView: View {
             case .main:
                 MainView(state: $state)
             case .win:
-                WinView()
+                WinView(state: $state)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
