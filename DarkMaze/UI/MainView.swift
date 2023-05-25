@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @Binding var state: GameState
+    @State var blindMode = false
     
     var body: some View {
         VStack {
@@ -36,6 +37,22 @@ struct MainView: View {
                     .foregroundColor(.white)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
                     .border(.white, width: 4)
+            }
+            Button {
+                blindMode.toggle()
+            } label: {
+                HStack {
+                    Text(blindMode ? "Blind mode on" : "Blind mode off")
+                        .foregroundColor(.white)
+                        .font(.system(size: 18, weight: .black, design: .monospaced))
+                        .padding(.leading)
+                    Spacer()
+                    Image(systemName: blindMode ? "eye.fill" : "eye.slash.fill")
+                        .foregroundColor(.white)
+                        .padding(.trailing)
+                }
+                .frame(width: 250, height: 50)
+                .background(Color.black)
             }
         }
     }
