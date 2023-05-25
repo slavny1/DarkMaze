@@ -29,7 +29,7 @@ struct MainView: View {
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
             Button {
-                //
+                state = .win
             } label: {
                 Text("Settings")
                     .frame(width: 250, height: 50)
