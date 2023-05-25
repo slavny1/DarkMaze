@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		13379D652A1F626E0015BD93 /* WinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D642A1F626E0015BD93 /* WinView.swift */; };
+		13379D672A1F64460015BD93 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D662A1F64460015BD93 /* MainView.swift */; };
 		1352FF7429FBBD14002799A9 /* DarkMazeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */; };
 		1352FF7629FBBD14002799A9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF7529FBBD14002799A9 /* ContentView.swift */; };
 		1352FF7829FBBD15002799A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1352FF7729FBBD15002799A9 /* Assets.xcassets */; };
@@ -26,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		13379D642A1F626E0015BD93 /* WinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinView.swift; sourceTree = "<group>"; };
+		13379D662A1F64460015BD93 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		1352FF7029FBBD14002799A9 /* DarkMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DarkMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkMazeApp.swift; sourceTree = "<group>"; };
 		1352FF7529FBBD14002799A9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,6 +60,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		13379D622A1F5D540015BD93 /* GameScene */ = {
+			isa = PBXGroup;
+			children = (
+				1352FF8329FBBDE4002799A9 /* GameScene.swift */,
+				1352FF8529FBBDFF002799A9 /* MazeLib.swift */,
+				1352FF8729FBBE0E002799A9 /* TileNode.swift */,
+				1352FF8929FBBE20002799A9 /* WinScene.swift */,
+			);
+			path = GameScene;
+			sourceTree = "<group>";
+		};
+		13379D632A1F5D780015BD93 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				1352FF7529FBBD14002799A9 /* ContentView.swift */,
+				13379D662A1F64460015BD93 /* MainView.swift */,
+				1352FF8129FBBDD2002799A9 /* GameView.swift */,
+				13379D642A1F626E0015BD93 /* WinView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		1352FF6729FBBD14002799A9 = {
 			isa = PBXGroup;
 			children = (
@@ -76,12 +102,8 @@
 			isa = PBXGroup;
 			children = (
 				1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */,
-				1352FF7529FBBD14002799A9 /* ContentView.swift */,
-				1352FF8129FBBDD2002799A9 /* GameView.swift */,
-				1352FF8329FBBDE4002799A9 /* GameScene.swift */,
-				1352FF8529FBBDFF002799A9 /* MazeLib.swift */,
-				1352FF8729FBBE0E002799A9 /* TileNode.swift */,
-				1352FF8929FBBE20002799A9 /* WinScene.swift */,
+				13379D632A1F5D780015BD93 /* UI */,
+				13379D622A1F5D540015BD93 /* GameScene */,
 				1352FF8F29FBBEA7002799A9 /* Extension */,
 				1352FF9A29FBC03F002799A9 /* Resources */,
 				1352FF7729FBBD15002799A9 /* Assets.xcassets */,
@@ -199,7 +221,9 @@
 				1352FF8829FBBE0E002799A9 /* TileNode.swift in Sources */,
 				1352FF8229FBBDD2002799A9 /* GameView.swift in Sources */,
 				1352FF8A29FBBE20002799A9 /* WinScene.swift in Sources */,
+				13379D652A1F626E0015BD93 /* WinView.swift in Sources */,
 				1352FF8629FBBDFF002799A9 /* MazeLib.swift in Sources */,
+				13379D672A1F64460015BD93 /* MainView.swift in Sources */,
 				1352FF8429FBBDE4002799A9 /* GameScene.swift in Sources */,
 				1352FF8E29FBBE47002799A9 /* ExtDistance.swift in Sources */,
 				1352FF7429FBBD14002799A9 /* DarkMazeApp.swift in Sources */,
