@@ -17,7 +17,7 @@ struct WinView: View {
                 .foregroundColor(.white)
                 .font(.system(size: 124, weight: .black, design: .monospaced))
             Button {
-                //
+                state = .game
             } label: {
                 Text("Start again")
                     .frame(width: 250, height: 50)

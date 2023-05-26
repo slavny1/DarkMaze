@@ -17,7 +17,7 @@ struct ContentView: View {
         ZStack {
             switch state {
             case .game:
-                GameView()
+                GameView(state: $state)
             case .main:
                 MainView(state: $state)
             case .win:

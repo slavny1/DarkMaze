@@ -11,15 +11,35 @@ import SpriteKit
 
 struct GameView: View {
 
+    @Binding var state: GameState
+
     var scene: SKScene {
-        let scene = GameScene(size: UIScreen.main.bounds.size)
-        scene.scaleMode = .aspectFill
+        let scene = GameScene()
+        scene.scaleMode = .aspectFit
+        scene.size = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
         return scene
     }
 
     var body: some View {
-        SpriteView(scene: scene, transition: nil)
-            .edgesIgnoringSafeArea(.all)
+        VStack {
+            HStack {
+                Button {
+                    //reset game
+                } label: {
+                    Text("Reset")
+                }
+                Button {
+                    state = .main
+                } label: {
+                    Text("Main")
+                }
+            }
+
+            SpriteView(scene: scene, transition: nil)
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
+            //            .padding()
+            //            .ignoresSafeArea()
+        }
     }
 
 }
