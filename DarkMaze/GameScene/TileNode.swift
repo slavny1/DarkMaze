@@ -23,7 +23,7 @@ class TileNode: SKShapeNode {
                 case .black:
                     self.fillColor = .black
                 case .gray:
-                    self.fillColor = .black
+                    self.fillColor = .gray
                 }
             }
         }

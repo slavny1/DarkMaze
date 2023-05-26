@@ -12,6 +12,7 @@ import AVFoundation
 
 class GameScene: SKScene {
 
+    var appState: AppState?
     var lastTouchLocation: CGPoint?
     var initialPosition: CGPoint?
     var finalPosition: CGPoint?
@@ -40,7 +41,6 @@ class GameScene: SKScene {
         createFather()
         createMaze()
         createBall()
-//        createReset()
         moveSound(volume: volume)
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
@@ -54,15 +54,6 @@ class GameScene: SKScene {
         fatherTile.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(fatherTile)
     }
-
-//    func createReset() {
-//        let resetLabel = SKLabelNode(text: "Restart")
-//        resetLabel.fontSize = 32
-//        resetLabel.fontColor = .white
-//        resetLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + fatherTile.frame.height / 2 + 50)
-//        resetLabel.name = "resetLabel"
-//        addChild(resetLabel)
-//    }
 
     func createMaze() {
         let mazeLevelOne = MazeLibrary.mazes.randomElement()!
@@ -130,20 +121,12 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let touchLocation = touch.location(in: fatherTile)
-        let location = touch.location(in: self)
-        let nodes = self.nodes(at: location)
         if ball.frame.contains(touchLocation) {
             lastTouchLocation = touchLocation
             print("Ball tapped")
             tapFeedbackBallTouched.impactOccurred()
-//            audioPlayer?.volume += 0.01
             audioPlayer?.play()
         }
-//        for node in nodes {
-//            if node.name == "resetLabel" {
-//                resetGame()
-//            }
-//        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -201,18 +184,6 @@ class GameScene: SKScene {
         print("Win detected")
         audioPlayer?.stop()
         AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-        //        resetGame()
-        let winScene = WinScene(size: self.size)
-        view?.presentScene(winScene)
+        appState?.state = .win
     }
-
-    func resetGame() {
-        removeAllChildren()
-        didMove(to: view!)
-    }
-//    func resetGame() {
-//        let transition = SKTransition.fade(withDuration: 1.0)
-//        let gameScene = GameScene(size: size)
-//        self.view?.presentScene(gameScene, transition: transition)
-//    }
 }

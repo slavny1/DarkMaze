@@ -17,7 +17,6 @@
 		1352FF8429FBBDE4002799A9 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF8329FBBDE4002799A9 /* GameScene.swift */; };
 		1352FF8629FBBDFF002799A9 /* MazeLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF8529FBBDFF002799A9 /* MazeLib.swift */; };
 		1352FF8829FBBE0E002799A9 /* TileNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF8729FBBE0E002799A9 /* TileNode.swift */; };
-		1352FF8A29FBBE20002799A9 /* WinScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF8929FBBE20002799A9 /* WinScene.swift */; };
 		1352FF8C29FBBE37002799A9 /* ExtContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF8B29FBBE37002799A9 /* ExtContact.swift */; };
 		1352FF8E29FBBE47002799A9 /* ExtDistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF8D29FBBE47002799A9 /* ExtDistance.swift */; };
 		1352FF9529FBC036002799A9 /* win.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1352FF9029FBC036002799A9 /* win.mp3 */; };
@@ -40,7 +39,6 @@
 		1352FF8329FBBDE4002799A9 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		1352FF8529FBBDFF002799A9 /* MazeLib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MazeLib.swift; sourceTree = "<group>"; };
 		1352FF8729FBBE0E002799A9 /* TileNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileNode.swift; sourceTree = "<group>"; };
-		1352FF8929FBBE20002799A9 /* WinScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinScene.swift; sourceTree = "<group>"; };
 		1352FF8B29FBBE37002799A9 /* ExtContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtContact.swift; sourceTree = "<group>"; };
 		1352FF8D29FBBE47002799A9 /* ExtDistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtDistance.swift; sourceTree = "<group>"; };
 		1352FF9029FBC036002799A9 /* win.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = win.mp3; sourceTree = "<group>"; };
@@ -68,7 +66,6 @@
 				1352FF8329FBBDE4002799A9 /* GameScene.swift */,
 				1352FF8529FBBDFF002799A9 /* MazeLib.swift */,
 				1352FF8729FBBE0E002799A9 /* TileNode.swift */,
-				1352FF8929FBBE20002799A9 /* WinScene.swift */,
 			);
 			path = GameScene;
 			sourceTree = "<group>";
@@ -224,7 +221,6 @@
 				1352FF8829FBBE0E002799A9 /* TileNode.swift in Sources */,
 				139048A82A20ECAA00183643 /* AppState.swift in Sources */,
 				1352FF8229FBBDD2002799A9 /* GameView.swift in Sources */,
-				1352FF8A29FBBE20002799A9 /* WinScene.swift in Sources */,
 				13379D652A1F626E0015BD93 /* WinView.swift in Sources */,
 				1352FF8629FBBDFF002799A9 /* MazeLib.swift in Sources */,
 				13379D672A1F64460015BD93 /* MainView.swift in Sources */,
