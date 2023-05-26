@@ -8,7 +8,6 @@
 import Foundation
 import SpriteKit
 import UIKit
-import AudioToolbox
 import AVFoundation
 
 class GameScene: SKScene {
@@ -41,7 +40,7 @@ class GameScene: SKScene {
         createFather()
         createMaze()
         createBall()
-        createReset()
+//        createReset()
         moveSound(volume: volume)
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
@@ -56,14 +55,14 @@ class GameScene: SKScene {
         addChild(fatherTile)
     }
 
-    func createReset() {
-        let resetLabel = SKLabelNode(text: "Restart")
-        resetLabel.fontSize = 32
-        resetLabel.fontColor = .white
-        resetLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + fatherTile.frame.height / 2 + 50)
-        resetLabel.name = "resetLabel"
-        addChild(resetLabel)
-    }
+//    func createReset() {
+//        let resetLabel = SKLabelNode(text: "Restart")
+//        resetLabel.fontSize = 32
+//        resetLabel.fontColor = .white
+//        resetLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + fatherTile.frame.height / 2 + 50)
+//        resetLabel.name = "resetLabel"
+//        addChild(resetLabel)
+//    }
 
     func createMaze() {
         let mazeLevelOne = MazeLibrary.mazes.randomElement()!
@@ -104,7 +103,6 @@ class GameScene: SKScene {
         ball = SKShapeNode(circleOfRadius: fatherTile.frame.width / 20)
         ball.fillColor = .white
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.width / 10)
-        print(ball.frame.size)
         ball.physicsBody?.isDynamic = true
         ball.physicsBody?.categoryBitMask = PhysicsCategory.ball
         ball.physicsBody?.contactTestBitMask = PhysicsCategory.block | PhysicsCategory.win
@@ -141,11 +139,11 @@ class GameScene: SKScene {
 //            audioPlayer?.volume += 0.01
             audioPlayer?.play()
         }
-        for node in nodes {
-            if node.name == "resetLabel" {
-                resetGame()
-            }
-        }
+//        for node in nodes {
+//            if node.name == "resetLabel" {
+//                resetGame()
+//            }
+//        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -212,4 +210,9 @@ class GameScene: SKScene {
         removeAllChildren()
         didMove(to: view!)
     }
+//    func resetGame() {
+//        let transition = SKTransition.fade(withDuration: 1.0)
+//        let gameScene = GameScene(size: size)
+//        self.view?.presentScene(gameScene, transition: transition)
+//    }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WinView: View {
 
-    @Binding var state: GameState
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
         VStack(alignment: .center) {
@@ -17,7 +17,7 @@ struct WinView: View {
                 .foregroundColor(.white)
                 .font(.system(size: 124, weight: .black, design: .monospaced))
             Button {
-                //
+                appState.state = .game
             } label: {
                 Text("Start again")
                     .frame(width: 250, height: 50)
@@ -26,7 +26,7 @@ struct WinView: View {
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
             Button {
-                state = .main
+                appState.state = .main
             } label: {
                 Text("Main menu")
                     .frame(width: 250, height: 50)
@@ -42,7 +42,7 @@ struct WinView: View {
 
 struct WinView_Previews: PreviewProvider {
     static var previews: some View {
-        WinView(state: .constant(.game))
+        WinView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @Binding var state: GameState
+    @EnvironmentObject var appState: AppState
     @State var blindMode = false
     
     var body: some View {
@@ -20,7 +20,7 @@ struct MainView: View {
             .foregroundColor(.white)
             .font(.system(size: 124, weight: .black, design: .monospaced))
             Button {
-                state = .game
+                appState.state = .game
             } label: {
                 Text("Start game")
                     .frame(width: 250, height: 50)
@@ -29,7 +29,7 @@ struct MainView: View {
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
             Button {
-                state = .win
+                appState.state = .win
             } label: {
                 Text("Settings")
                     .frame(width: 250, height: 50)
@@ -60,7 +60,7 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView(state: .constant(.game))
+        MainView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()
