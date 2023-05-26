@@ -14,7 +14,6 @@ struct ContentView: View {
     @EnvironmentObject var appState: AppState
 
     var body: some View {
-        ZStack {
             switch appState.state {
             case .game:
                 GameView().id(appState.gameID)
@@ -23,8 +22,6 @@ struct ContentView: View {
             case .win:
                 WinView()
             }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -34,6 +31,7 @@ struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
         ContentView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .environmentObject(appState)
             .background(Color.black)
             .ignoresSafeArea()
