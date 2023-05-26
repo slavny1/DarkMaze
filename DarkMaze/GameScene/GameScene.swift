@@ -210,4 +210,9 @@ class GameScene: SKScene {
         removeAllChildren()
         didMove(to: view!)
     }
+//    func resetGame() {
+//        let transition = SKTransition.fade(withDuration: 1.0)
+//        let gameScene = GameScene(size: size)
+//        self.view?.presentScene(gameScene, transition: transition)
+//    }
 }

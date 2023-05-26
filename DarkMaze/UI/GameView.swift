@@ -27,7 +27,8 @@ struct GameView: View {
                 .font(.system(size: 32, weight: .black, design: .monospaced))
             HStack(spacing: 25) {
                 Button {
-                    //reset game
+                    let resetGame = GameScene()
+                    resetGame.resetGame()
                 } label: {
                     Text("Reset")
                         .frame(width: 150, height: 50)
