@@ -7,31 +7,35 @@
 
 import SwiftUI
 
-enum GameState {
-    case main, game, win
-}
+
 
 struct ContentView: View {
-    @State var state: GameState = .main
+
+    @EnvironmentObject var appState: AppState
+
     var body: some View {
         ZStack {
-            switch state {
+            switch appState.state {
             case .game:
-                GameView(state: $state)
+                GameView().id(appState.gameID)
             case .main:
-                MainView(state: $state)
+                MainView()
             case .win:
-                WinView(state: $state)
+                WinView()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .ignoresSafeArea()
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
+    
+    @ObservedObject static var appState = AppState()
+    
     static var previews: some View {
         ContentView()
+            .environmentObject(appState)
+            .background(Color.black)
+            .ignoresSafeArea()
     }
 }

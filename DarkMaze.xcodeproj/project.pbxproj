@@ -25,6 +25,7 @@
 		1352FF9729FBC036002799A9 /* ufo.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1352FF9229FBC036002799A9 /* ufo.mp3 */; };
 		1352FF9829FBC036002799A9 /* edge.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1352FF9329FBC036002799A9 /* edge.mp3 */; };
 		1352FF9929FBC036002799A9 /* bonus.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1352FF9429FBC036002799A9 /* bonus.mp3 */; };
+		139048A82A20ECAA00183643 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139048A72A20ECAA00183643 /* AppState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		1352FF9229FBC036002799A9 /* ufo.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ufo.mp3; sourceTree = "<group>"; };
 		1352FF9329FBC036002799A9 /* edge.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = edge.mp3; sourceTree = "<group>"; };
 		1352FF9429FBC036002799A9 /* bonus.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bonus.mp3; sourceTree = "<group>"; };
+		139048A72A20ECAA00183643 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */,
+				139048A72A20ECAA00183643 /* AppState.swift */,
 				13379D632A1F5D780015BD93 /* UI */,
 				13379D622A1F5D540015BD93 /* GameScene */,
 				1352FF8F29FBBEA7002799A9 /* Extension */,
@@ -219,6 +222,7 @@
 				1352FF8C29FBBE37002799A9 /* ExtContact.swift in Sources */,
 				1352FF7629FBBD14002799A9 /* ContentView.swift in Sources */,
 				1352FF8829FBBE0E002799A9 /* TileNode.swift in Sources */,
+				139048A82A20ECAA00183643 /* AppState.swift in Sources */,
 				1352FF8229FBBDD2002799A9 /* GameView.swift in Sources */,
 				1352FF8A29FBBE20002799A9 /* WinScene.swift in Sources */,
 				13379D652A1F626E0015BD93 /* WinView.swift in Sources */,

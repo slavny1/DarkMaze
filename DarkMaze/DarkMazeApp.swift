@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct DarkMazeApp: App {
+
+    @ObservedObject var appState = AppState()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(appState)
+                .background(Color.black)
+                .ignoresSafeArea()
         }
     }
 }
+

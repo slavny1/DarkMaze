@@ -11,7 +11,7 @@ import SpriteKit
 
 struct GameView: View {
 
-    @Binding var state: GameState
+    @EnvironmentObject var appState: AppState
 
     var scene: SKScene {
         let scene = GameScene()
@@ -27,8 +27,7 @@ struct GameView: View {
                 .font(.system(size: 32, weight: .black, design: .monospaced))
             HStack(spacing: 25) {
                 Button {
-                    let resetGame = GameScene()
-                    resetGame.resetGame()
+                    appState.gameID = UUID()
                 } label: {
                     Text("Reset")
                         .frame(width: 150, height: 50)
@@ -37,7 +36,7 @@ struct GameView: View {
                         .font(.system(size: 24, weight: .black, design: .monospaced))
                 }
                 Button {
-                    state = .main
+                    appState.state = .main
                 } label: {
                     Text("Main")
                         .frame(width: 150, height: 50)
