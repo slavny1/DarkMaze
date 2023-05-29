@@ -13,21 +13,24 @@ import AVFoundation
 class GameScene: SKScene {
 
     var appState: AppState?
-    var lastTouchLocation: CGPoint?
-    var initialPosition: CGPoint?
-    var finalPosition: CGPoint?
-    var ball: SKShapeNode!
+
+    private var lastTouchLocation: CGPoint?
+    private var initialPosition: CGPoint? // position for ball
+//    var finalPosition: CGPoint?
+
+    private var closestDistance: CGFloat = CGFloat.infinity //
+    private var distanceToNode: CGFloat? // standart distance from ball to node
+
+    private var ball: SKShapeNode!
     var fatherTile: SKShapeNode!
-    var audioPlayer: AVAudioPlayer?
-    var closestDistance: CGFloat = CGFloat.infinity
-    var volume: Float = 0
 
-    var distanceToNode: CGFloat?
+    private var audioPlayer: AVAudioPlayer?
+    private var volume: Float = 0
 
-    let tapFeedbackBallTouched = UIImpactFeedbackGenerator(style: .heavy)
-    let tapFeedbackBallFound = UIImpactFeedbackGenerator(style: .light)
-    let tapFeedbackBallMoving = UISelectionFeedbackGenerator()
-    let tapFeedbackCollision = UINotificationFeedbackGenerator()
+    private let tapFeedbackBallTouched = UIImpactFeedbackGenerator(style: .heavy)
+    private let tapFeedbackBallFound = UIImpactFeedbackGenerator(style: .light)
+    private let tapFeedbackBallMoving = UISelectionFeedbackGenerator()
+    private let tapFeedbackCollision = UINotificationFeedbackGenerator()
 
     struct PhysicsCategory {
         static let none: UInt32 = 0
@@ -42,11 +45,12 @@ class GameScene: SKScene {
         createMaze()
         createBall()
         moveSound(volume: volume)
+
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
     }
 
-    func createFather() {
+    private func createFather() {
         guard let view = view else { return }
         fatherTile = SKShapeNode(rectOf: .init(width: view.frame.width, height: view.frame.width))
         fatherTile.fillColor = .clear
@@ -55,20 +59,34 @@ class GameScene: SKScene {
         addChild(fatherTile)
     }
 
-    func createMaze() {
+    // MARK: Maze creation
+
+    private func createMaze() {
         let mazeLevelOne = MazeLibrary.mazes.randomElement()!
-        let tileWidth = (Int(fatherTile.frame.size.width)) / mazeLevelOne.count
+
+        // Define size of a tile
+        let tileWidth = Int(fatherTile.frame.size.width) / mazeLevelOne.count
+
+        // Define an offset for the first tile in a maze
         let mazeOffset = CGFloat(tileWidth / 2) - fatherTile.frame.width / 2 + fatherTile.lineWidth - 2
+
+        // Set a position for the ball
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
+
+        // Define distance from ball to the center of node
         distanceToNode = fatherTile.frame.width / CGFloat(mazeLevelOne.count)
+
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
-
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-                tile.type = .gray
+                tile.type = .gray // define it's as gray if I need to test - the open nodes will be gray color
                 tile.strokeColor = .white
                 tile.lineWidth = 1
-                tile.position = CGPoint(x: Int(mazeOffset) + column * (tileWidth), y: Int(mazeOffset) + row * (tileWidth))
+
+                // define position of a tile
+                tile.position = CGPoint(x: Int(mazeOffset) + column * tileWidth, y: Int(mazeOffset) + row * tileWidth)
+
+                // If matrix number is == 0 then its BLOCK
                 if mazeLevelOne[row][column] == 0 {
                     tile.type = .black
                     tile.physicsBody = SKPhysicsBody(rectangleOf: tile.frame.size)
@@ -77,6 +95,8 @@ class GameScene: SKScene {
                     tile.physicsBody?.contactTestBitMask = PhysicsCategory.ball
                     tile.physicsBody?.collisionBitMask = PhysicsCategory.none
                 }
+
+                // For the last tile -- WIN
                 if (row == mazeLevelOne.count - 1) && (column == mazeLevelOne[row].count - 1) {
                     tile.fillColor = .white
                     tile.physicsBody = SKPhysicsBody(rectangleOf: tile.frame.size)
@@ -90,9 +110,11 @@ class GameScene: SKScene {
         }
     }
 
-    func createBall() {
+    private func createBall() {
+        // In the future radius should change dependig on size of a tile and maze
         ball = SKShapeNode(circleOfRadius: fatherTile.frame.width / 20)
         ball.fillColor = .white
+        // Ball's ohysics body will change too depending on complexity of game (the more the harder)
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.width / 10)
         ball.physicsBody?.isDynamic = true
         ball.physicsBody?.categoryBitMask = PhysicsCategory.ball
@@ -102,7 +124,9 @@ class GameScene: SKScene {
         fatherTile.addChild(ball)
     }
 
-    func moveSound(volume: Float) {
+    // MARK: Moving music
+
+    private func moveSound(volume: Float) {
 
         guard let url = Bundle.main.url(forResource: "ufo", withExtension: "mp3") else { return }
 
@@ -116,7 +140,7 @@ class GameScene: SKScene {
         }
     }
 
-    //MARK: Touches
+    // MARK: Touches
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
@@ -131,26 +155,35 @@ class GameScene: SKScene {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
+
         let touchLocation = touch.location(in: fatherTile)
+
+        // define closest distance as closest black tile to ball
         closestDistance = closestBlackTile(to: ball)
+
+        //change volume (need to reconsider constant in the second part of equation)
         audioPlayer?.volume = Float((distanceToNode! - closestDistance) / 15)
 //        print(audioPlayer?.volume)
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
             tapFeedbackBallTouched.impactOccurred()
-            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
+//            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
             audioPlayer?.play()
         }
-        guard (lastTouchLocation != nil) else { return }
+        guard lastTouchLocation != nil else { return }
+
         guard ball.position.x > -fatherTile.frame.width / 2,
               ball.position.y > -fatherTile.frame.height / 2,
               ball.position.x < fatherTile.frame.width / 2,
               ball.position.y < fatherTile.frame.height / 2 else {
+            // return ball to the initial position in case it fell out of the border
             ball.position = initialPosition!
             tapFeedbackCollision.notificationOccurred(.warning)
             run(SKAction.playSoundFileNamed("edge.mp3", waitForCompletion: false))
             lastTouchLocation = nil
             return
         }
+
+        // Ball moving
         tapFeedbackBallMoving.selectionChanged()
         ball.position = touchLocation
     }
@@ -166,7 +199,7 @@ class GameScene: SKScene {
         lastTouchLocation = nil
     }
 
-    //MARK: Collisions
+    // MARK: Collisions
 
     func ballCollideWithBlock(ball: SKShapeNode, block: SKShapeNode) {
         print("Collision detected")
