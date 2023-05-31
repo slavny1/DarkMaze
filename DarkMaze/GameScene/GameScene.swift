@@ -216,6 +216,7 @@ class GameScene: SKScene {
     func ballCollideWithWin(ball: SKShapeNode, block: SKShapeNode) {
         print("Win detected")
         audioPlayer?.stop()
+        run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
         AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
         appState?.state = .win
     }
