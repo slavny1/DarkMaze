@@ -74,7 +74,7 @@ class GameScene: SKScene {
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
 
         // Define distance from ball to the center of node
-        distanceToNode = fatherTile.frame.width / CGFloat(mazeLevelOne.count)
+        distanceToNode = fatherTile.frame.width / CGFloat(mazeLevelOne.count) / 2
 
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
@@ -162,8 +162,8 @@ class GameScene: SKScene {
         closestDistance = closestBlackTile(to: ball)
 
         //change volume (need to reconsider constant in the second part of equation)
-        audioPlayer?.volume = Float((distanceToNode! - closestDistance) / 15)
-//        print(audioPlayer?.volume)
+        audioPlayer?.volume = Float((distanceToNode! - closestDistance) * 5)
+        print(audioPlayer?.volume as Any)
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
             tapFeedbackBallTouched.impactOccurred()
 //            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
@@ -209,7 +209,7 @@ class GameScene: SKScene {
         run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
         audioPlayer?.stop()
         lastTouchLocation = nil
-        print(closestDistance)
+//        print(closestDistance)
         createBall()
     }
 
