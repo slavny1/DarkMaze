@@ -12,16 +12,29 @@ import SwiftUI
 struct ContentView: View {
 
     @EnvironmentObject var appState: AppState
+    @State var blindMode = false
 
     var body: some View {
+        NavigationView {
+
             switch appState.state {
             case .game:
-                GameView().id(appState.gameID)
+                GameView(blindMode: $blindMode).id(appState.gameID)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+                    .ignoresSafeArea()
             case .main:
-                MainView()
+                MainView(blindMode: $blindMode)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+                    .ignoresSafeArea()
             case .win:
                 WinView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+                    .ignoresSafeArea()
             }
+        }
     }
 }
 

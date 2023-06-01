@@ -13,10 +13,10 @@ import AVFoundation
 class GameScene: SKScene {
 
     var appState: AppState?
+    var blindMode: Bool?
 
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
-//    var finalPosition: CGPoint?
 
     private var closestDistance: CGFloat = CGFloat.infinity //
     private var distanceToNode: CGFloat? // standart distance from ball to node
@@ -79,7 +79,13 @@ class GameScene: SKScene {
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-                tile.type = .gray // define it's as gray if I need to test - the open nodes will be gray color
+
+                 // define it's as gray if I need to test - the open nodes will be gray color
+                if blindMode! {
+                    tile.type = .black
+                } else {
+                    tile.type = .gray
+                }
                 tile.strokeColor = .white
                 tile.lineWidth = 1
 

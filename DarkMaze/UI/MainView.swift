@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
-    @State var blindMode = false
+    @Binding var blindMode: Bool
     
     var body: some View {
         VStack {
@@ -61,7 +61,7 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView()
+        MainView(blindMode: .constant(false))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()
