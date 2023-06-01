@@ -161,16 +161,19 @@ class GameScene: SKScene {
         // define closest distance as closest black tile to ball
         closestDistance = closestBlackTile(to: ball)
 
-        //change volume (need to reconsider constant in the second part of equation)
+        //change volume depends on a distance from the edge or black tile (const 10 is for reducing volume of moving ball compare with collision sounds)
         audioPlayer?.volume = Float((distanceToNode! - closestDistance) / 10)
-        print(audioPlayer?.volume as Any)
+//        print(audioPlayer?.volume as Any)
+
+        // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
             tapFeedbackBallTouched.impactOccurred()
 //            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
-            audioPlayer?.play()
+//            audioPlayer?.play()
         }
         guard lastTouchLocation != nil else { return }
 
+        // if ball whent of edges of the maze more than a half
         guard ball.position.x > -fatherTile.frame.width / 2,
               ball.position.y > -fatherTile.frame.height / 2,
               ball.position.x < fatherTile.frame.width / 2,
@@ -209,7 +212,7 @@ class GameScene: SKScene {
         audioPlayer?.stop()
         run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
         lastTouchLocation = nil
-//        print(closestDistance)
+        print(closestDistance)
         createBall()
     }
 
