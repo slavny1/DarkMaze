@@ -17,8 +17,8 @@ extension GameScene {
 //    }
 
     func distance(from ball: SKShapeNode, to tile: SKShapeNode) -> CGFloat {
-        let tileWidth = tile.frame.width
-        let halfTileWidth = tileWidth / 2
+
+        let halfTileWidth = tile.frame.width / 2
 
         let ballCenter = ball.position
         let tileCenter = tile.position
@@ -32,8 +32,19 @@ extension GameScene {
         return sqrt(xDistance * xDistance + yDistance * yDistance)
     }
 
+    func edgeDistance(to ball: SKShapeNode) -> CGFloat {
+
+        let mazeHalfWidth = fatherTile.frame.size.width / 2
+
+        let xEdgeDistance = mazeHalfWidth - abs(ball.position.x)
+        let yEdgeDistance = mazeHalfWidth - abs(ball.position.y)
+
+        return min(xEdgeDistance, yEdgeDistance)
+    }
+
     func closestBlackTile(to ball: SKShapeNode) -> CGFloat {
-        var closestDistance: CGFloat = CGFloat.infinity
+        var closestDistance: CGFloat = edgeDistance(to: ball)
+
         fatherTile.children.forEach { child in
             if let blackNode = child as? TileNode  {
                 if blackNode.type == .black {
