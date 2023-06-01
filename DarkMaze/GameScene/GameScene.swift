@@ -68,13 +68,13 @@ class GameScene: SKScene {
         let tileWidth = Int(fatherTile.frame.size.width) / mazeLevelOne.count
 
         // Define an offset for the first tile in a maze
-        let mazeOffset = CGFloat(tileWidth / 2) - fatherTile.frame.width / 2 + fatherTile.lineWidth - 2
+        let mazeOffset = CGFloat(tileWidth / 2) - fatherTile.frame.width / 2 + fatherTile.lineWidth
 
         // Set a position for the ball
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
 
         // Define distance from ball to the center of node
-        distanceToNode = fatherTile.frame.width / CGFloat(mazeLevelOne.count)
+        distanceToNode = fatherTile.frame.width / CGFloat(mazeLevelOne.count) / 2 - fatherTile.lineWidth
 
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
@@ -161,16 +161,19 @@ class GameScene: SKScene {
         // define closest distance as closest black tile to ball
         closestDistance = closestBlackTile(to: ball)
 
-        //change volume (need to reconsider constant in the second part of equation)
-        audioPlayer?.volume = Float((distanceToNode! - closestDistance) / 15)
-//        print(audioPlayer?.volume)
+        //change volume depends on a distance from the edge or black tile (const 10 is for reducing volume of moving ball compare with collision sounds)
+        audioPlayer?.volume = Float((distanceToNode! - closestDistance) / 10)
+//        print(audioPlayer?.volume as Any)
+
+        // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
             tapFeedbackBallTouched.impactOccurred()
 //            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
-            audioPlayer?.play()
+//            audioPlayer?.play()
         }
         guard lastTouchLocation != nil else { return }
 
+        // if ball whent of edges of the maze more than a half
         guard ball.position.x > -fatherTile.frame.width / 2,
               ball.position.y > -fatherTile.frame.height / 2,
               ball.position.x < fatherTile.frame.width / 2,
@@ -206,8 +209,8 @@ class GameScene: SKScene {
         ball.removeFromParent()
         block.fillColor = .red
         tapFeedbackCollision.notificationOccurred(.error)
-        run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
         audioPlayer?.stop()
+        run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
         lastTouchLocation = nil
         print(closestDistance)
         createBall()
