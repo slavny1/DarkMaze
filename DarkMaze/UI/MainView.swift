@@ -38,22 +38,14 @@ struct MainView: View {
                     .font(.system(size: 24, weight: .black, design: .monospaced))
                     .border(.white, width: 4)
             }
-            Button {
-                blindMode.toggle()
-            } label: {
-                HStack {
-                    Text(blindMode ? "Blind mode on" : "Blind mode off")
-                        .foregroundColor(.white)
-                        .font(.system(size: 18, weight: .black, design: .monospaced))
-                        .padding(.leading)
-                    Spacer()
-                    Image(systemName: blindMode ? "eye.fill" : "eye.slash.fill")
-                        .foregroundColor(.white)
-                        .padding(.trailing)
-                }
-                .frame(width: 250, height: 50)
-                .background(Color.black)
+            Toggle(isOn: $blindMode) {
+                Text(blindMode ? "Blind mode on" : "Blind mode off")
+                    .foregroundColor(.white)
+                    .font(.system(size: 18, weight: .black, design: .monospaced))
+                    .padding(.leading)
             }
+            .toggleStyle(BlindModeToggleStyle())
+            .frame(width: 250, height: 40)
         }
         
     }

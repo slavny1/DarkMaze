@@ -36,12 +36,9 @@ struct GameView: View {
                     Button {
                         appState.state = .main
                     } label: {
-                        Text("Exit")
-//                            .frame(width: 150, height: 50)
-//                            .background(Color.black)
+                        Text("Main")
                             .foregroundColor(.white)
                             .font(.system(size: 18, weight: .black, design: .monospaced))
-//                            .border(.white, width: 4)
                     }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -49,19 +46,9 @@ struct GameView: View {
                         Button {
                             appState.gameID = UUID()
                         } label: {
-//                            Text("Reset")
-//                                .frame(width: 150, height: 50)
-//                                .background(Color.white)
-                            Image(systemName: "arrow.counterclockwise")
+                            Text("Reset")
                                 .foregroundColor(.white)
-                                .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        }
-                        Button {
-                            blindMode.toggle()
-                        } label: {
-                            Image(systemName: blindMode ? "eye.fill" : "eye.slash.fill")
-                            .font(.system(size: 16, weight: .bold, design: .monospaced))
-                            .foregroundColor(.white)
+                                .font(.system(size: 18, weight: .black, design: .monospaced))
                         }
                     }
                 }
