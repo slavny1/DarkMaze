@@ -53,7 +53,8 @@ class GameScene: SKScene {
     private func createFather() {
         guard let view = view else { return }
         fatherTile = SKShapeNode(rectOf: .init(width: view.frame.width, height: view.frame.width))
-        fatherTile.fillColor = .clear
+        // if it's blind mode all canvas will be black otherwise path will be gray
+        fatherTile.fillColor = blindMode ?? false ? .black : .gray
         fatherTile.strokeColor = .clear
         fatherTile.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(fatherTile)
@@ -74,27 +75,18 @@ class GameScene: SKScene {
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
 
         // Define distance from ball to the center of node
-        distanceToNode = fatherTile.frame.width / CGFloat(mazeLevelOne.count) / 2 - fatherTile.lineWidth
+        distanceToNode = CGFloat(tileWidth / 2)
 
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-
-                 // define it's as gray if I need to test - the open nodes will be gray color
-                if blindMode! {
-                    tile.type = .black
-                } else {
-                    tile.type = .gray
-                }
-                tile.strokeColor = .white
-                tile.lineWidth = 1
 
                 // define position of a tile
                 tile.position = CGPoint(x: Int(mazeOffset) + column * tileWidth, y: Int(mazeOffset) + row * tileWidth)
 
                 // If matrix number is == 0 then its BLOCK
                 if mazeLevelOne[row][column] == 0 {
-                    tile.type = .black
+                    tile.type = .wall
                     tile.physicsBody = SKPhysicsBody(rectangleOf: tile.frame.size)
                     tile.physicsBody?.isDynamic = true
                     tile.physicsBody?.categoryBitMask = PhysicsCategory.block
@@ -104,7 +96,7 @@ class GameScene: SKScene {
 
                 // For the last tile -- WIN
                 if (row == mazeLevelOne.count - 1) && (column == mazeLevelOne[row].count - 1) {
-                    tile.fillColor = .white
+                    tile.type = .win
                     tile.physicsBody = SKPhysicsBody(rectangleOf: tile.frame.size)
                     tile.physicsBody?.isDynamic = true
                     tile.physicsBody?.categoryBitMask = PhysicsCategory.win
@@ -168,8 +160,8 @@ class GameScene: SKScene {
         closestDistance = closestBlackTile(to: ball)
 
         //change volume depends on a distance from the edge or black tile (const 10 is for reducing volume of moving ball compare with collision sounds)
-        audioPlayer?.volume = Float((distanceToNode! - closestDistance) / 10)
-//        print(audioPlayer?.volume as Any)
+        //if wall or edge more than half tile size volume is constant
+        audioPlayer?.volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 10) : 0.01
 
         // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {

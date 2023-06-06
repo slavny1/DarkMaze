@@ -47,7 +47,7 @@ extension GameScene {
 
         fatherTile.children.forEach { child in
             if let blackNode = child as? TileNode  {
-                if blackNode.type == .black {
+                if blackNode.type == .wall {
                     let distanceToBall = distance(from: ball, to: blackNode)
                     if distanceToBall < closestDistance {
                         closestDistance = distanceToBall

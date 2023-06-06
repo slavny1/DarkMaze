@@ -9,9 +9,12 @@ import Foundation
 import SpriteKit
 
 class TileNode: SKShapeNode {
+
     enum TileType {
-        case black
+        case wall
         case gray
+        case win
+        case none
     }
 
     var type: TileType? = nil {
@@ -20,10 +23,14 @@ class TileNode: SKShapeNode {
             self.lineWidth = 1
             if let type = type {
                 switch type {
-                case .black:
+                case .wall:
                     self.fillColor = .black
                 case .gray:
                     self.fillColor = .gray
+                case .win:
+                    self.fillColor = .white
+                case .none:
+                    self.fillColor = .clear
                 }
             }
         }
