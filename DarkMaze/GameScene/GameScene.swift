@@ -206,6 +206,13 @@ class GameScene: SKScene {
         print("Collision detected")
         ball.removeFromParent()
         block.fillColor = .red
+
+        // Delay the execution of the color revert by one second
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            // Revert the block color back to the original color
+            block.fillColor = .black
+        }
+        
         tapFeedbackCollision.notificationOccurred(.error)
         audioPlayer?.stop()
         run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
