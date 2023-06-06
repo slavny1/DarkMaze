@@ -63,7 +63,7 @@ class GameScene: SKScene {
     // MARK: Maze creation
 
     private func createMaze() {
-        let mazeLevelOne = MazeLibrary.mazes.randomElement()!
+        let mazeLevelOne = MazeLibrary.randomMaze(level: .two)
 
         // Define size of a tile
         let tileWidth = Int(fatherTile.frame.size.width) / mazeLevelOne.count
