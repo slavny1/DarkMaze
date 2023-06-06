@@ -161,7 +161,7 @@ class GameScene: SKScene {
 
         //change volume depends on a distance from the edge or black tile (const 10 is for reducing volume of moving ball compare with collision sounds)
         //if wall or edge more than half tile size volume is constant
-        audioPlayer?.volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 10) : 0.01
+        audioPlayer?.volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 20) : 0.01
 
         // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
@@ -208,7 +208,7 @@ class GameScene: SKScene {
         block.fillColor = .red
 
         // Delay the execution of the color revert by one second
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             // Revert the block color back to the original color
             block.fillColor = .black
         }

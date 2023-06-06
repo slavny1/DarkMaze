@@ -15,24 +15,19 @@ struct ContentView: View {
     @State var blindMode = false
 
     var body: some View {
-        NavigationView {
-
-            switch appState.state {
-            case .game:
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if appState.state == .game {
                 GameView(blindMode: $blindMode).id(appState.gameID)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black)
-                    .ignoresSafeArea()
-            case .main:
+                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+            } else if appState.state == .main {
                 MainView(blindMode: $blindMode)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black)
-                    .ignoresSafeArea()
-            case .win:
+                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+            } else if appState.state == .win {
                 WinView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black)
-                    .ignoresSafeArea()
+                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
             }
         }
     }

@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import AudioToolbox
+import CoreHaptics
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
     @Binding var blindMode: Bool
+
+    private let toggleTappedHaptic = UIImpactFeedbackGenerator(style: .light)
     
     var body: some View {
         VStack {
@@ -28,16 +32,16 @@ struct MainView: View {
                     .foregroundColor(.black)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
-//            Button {
-//                appState.state = .win
-//            } label: {
-//                Text("Settings")
-//                    .frame(width: 250, height: 50)
-//                    .background(Color.black)
-//                    .foregroundColor(.white)
-//                    .font(.system(size: 24, weight: .black, design: .monospaced))
-//                    .border(.white, width: 4)
-//            }
+            //            Button {
+            //                appState.state = .win
+            //            } label: {
+            //                Text("Settings")
+            //                    .frame(width: 250, height: 50)
+            //                    .background(Color.black)
+            //                    .foregroundColor(.white)
+            //                    .font(.system(size: 24, weight: .black, design: .monospaced))
+            //                    .border(.white, width: 4)
+            //            }
             Toggle(isOn: $blindMode) {
                 Text(blindMode ? "Blind mode on" : "Blind mode off")
                     .foregroundColor(.white)
@@ -46,8 +50,12 @@ struct MainView: View {
             }
             .toggleStyle(BlindModeToggleStyle())
             .frame(width: 250, height: 40)
+            .onChange(of: blindMode) { newValue in
+                // Play system sound effect for toggle switching
+                AudioServicesPlaySystemSound(1104) // Use the desired system sound effect ID
+                toggleTappedHaptic.impactOccurred()
+            }
         }
-        
     }
 }
 
