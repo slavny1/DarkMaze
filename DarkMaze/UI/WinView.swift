@@ -19,7 +19,17 @@ struct WinView: View {
             Button {
                 appState.state = .game
             } label: {
-                Text("Start again")
+                Text("Play again")
+                    .frame(width: 250, height: 50)
+                    .background(Color.white)
+                    .foregroundColor(.black)
+                    .font(.system(size: 24, weight: .black, design: .monospaced))
+            }
+            Button {
+                appState.state = .game
+                appState.gameLevel = appState.nextLevel()
+            } label: {
+                Text("Next level")
                     .frame(width: 250, height: 50)
                     .background(Color.white)
                     .foregroundColor(.black)

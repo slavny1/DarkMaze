@@ -9,10 +9,6 @@ import Foundation
 
 class MazeLibrary {
 
-    enum GameLevel {
-        case zero, one, two, three
-    }
-
     static let mazesLevelZero = [
         [
             [1, 1, 0, 1],
@@ -157,7 +153,7 @@ class MazeLibrary {
         ]
     ]
 
-    static func randomMaze(level: GameLevel) -> [[Int]] {
+    static func randomMaze(level: AppState.GameLevel) -> [[Int]] {
         switch level {
         case .zero:
             return mazesLevelZero.randomElement()!

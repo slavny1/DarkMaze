@@ -18,7 +18,6 @@ struct DarkMazeApp: App {
                 ContentView()
                     .environmentObject(appState)
             }
-
         }
     }
 }

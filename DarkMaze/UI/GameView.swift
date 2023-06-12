@@ -25,9 +25,10 @@ struct GameView: View {
     
     var body: some View {
         SpriteView(scene: scene, transition: nil)
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("LEVEL 1")
+                    Text("LEVEL \(appState.gameLevel.rawValue)")
                         .foregroundColor(.white)
                         .font(.system(size: 32, weight: .black, design: .monospaced))
                 }
@@ -52,7 +53,5 @@ struct GameView: View {
                     }
                 }
             }
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
-
     }
 }
