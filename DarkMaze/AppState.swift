@@ -20,7 +20,7 @@ final class AppState: ObservableObject {
         case three = 3
 
         func nextLevel() -> GameLevel {
-            return Self(rawValue: self.rawValue + 1) ?? .zero
+            return Self(rawValue: self.rawValue + 1) ?? .three
         }
 
     }
@@ -28,5 +28,23 @@ final class AppState: ObservableObject {
     @Published var state: GameState = .main
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
-    @Published var topLevel: Int = 0
+
+    @Published var blindMode: Bool = false {
+        didSet {
+            UserDefaults.standard.set(topLevel, forKey: "blindMode")
+        }
+    }
+
+    @Published var topLevel: Int = 0 {
+        didSet {
+            UserDefaults.standard.set(topLevel, forKey: "topLevel")
+            gameLevel = GameLevel(rawValue: topLevel) ?? .zero
+        }
+    }
+
+    init() {
+        self.topLevel = UserDefaults.standard.integer(forKey: "topLevel")
+        self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
+        self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
+    }
 }

@@ -13,7 +13,6 @@ import AVFoundation
 class GameScene: SKScene {
 
     var appState: AppState?
-    var blindMode: Bool?
 
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
@@ -54,7 +53,7 @@ class GameScene: SKScene {
         guard let view = view else { return }
         fatherTile = SKShapeNode(rectOf: .init(width: view.frame.width, height: view.frame.width))
         // if it's blind mode all canvas will be black otherwise path will be gray
-        fatherTile.fillColor = blindMode ?? false ? .black : .gray
+        fatherTile.fillColor = appState?.blindMode ?? false ? .black : .gray
         fatherTile.strokeColor = .clear
         fatherTile.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(fatherTile)

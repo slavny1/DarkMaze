@@ -11,7 +11,6 @@ import CoreHaptics
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
-    @Binding var blindMode: Bool
 
     private let toggleTappedHaptic = UIImpactFeedbackGenerator(style: .light)
     
@@ -45,15 +44,15 @@ struct MainView: View {
                     .font(.system(size: 24, weight: .black, design: .monospaced))
                     .border(.white, width: 4)
             }
-            Toggle(isOn: $blindMode) {
-                Text(blindMode ? "Blind mode on" : "Blind mode off")
+            Toggle(isOn: $appState.blindMode) {
+                Text(appState.blindMode ? "Blind mode on" : "Blind mode off")
                     .foregroundColor(.white)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                     .padding(.leading)
             }
             .toggleStyle(BlindModeToggleStyle())
             .frame(width: 250, height: 40)
-            .onChange(of: blindMode) { newValue in
+            .onChange(of: appState.blindMode) { newValue in
                 // Play system sound effect for toggle switching
                 AudioServicesPlaySystemSound(1104) // Use the desired system sound effect ID
                 toggleTappedHaptic.impactOccurred()
@@ -64,7 +63,7 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView(blindMode: .constant(false))
+        MainView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()
