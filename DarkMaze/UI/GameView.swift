@@ -12,13 +12,11 @@ import SpriteKit
 struct GameView: View {
     
     @EnvironmentObject var appState: AppState
-    @Binding var blindMode: Bool
     
     var scene: SKScene {
         let scene = GameScene()
         scene.scaleMode = .aspectFit
         scene.appState = appState
-        scene.blindMode = blindMode
         scene.size = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
         return scene
     }

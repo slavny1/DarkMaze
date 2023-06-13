@@ -12,7 +12,6 @@ import SwiftUI
 struct ContentView: View {
 
     @EnvironmentObject var appState: AppState
-    @State var blindMode = false
 
     var body: some View {
         ZStack {
@@ -20,10 +19,10 @@ struct ContentView: View {
                 .ignoresSafeArea()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             if appState.state == .game {
-                GameView(blindMode: $blindMode).id(appState.gameID)
+                GameView().id(appState.gameID)
                     .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
             } else if appState.state == .main {
-                MainView(blindMode: $blindMode)
+                MainView()
                     .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
             } else if appState.state == .win {
                 WinView()
