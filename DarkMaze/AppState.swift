@@ -28,4 +28,5 @@ final class AppState: ObservableObject {
     @Published var state: GameState = .main
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
+    @Published var topLevel: Int = 0
 }

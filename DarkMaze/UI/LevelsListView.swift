@@ -8,18 +8,20 @@
 import SwiftUI
 
 struct LevelsListView: View {
-
+    
     @EnvironmentObject var appState: AppState
-
+    
     var body: some View {
         ScrollView {
             ForEach(AppState.GameLevel.allCases, id: \.self) { level in
                 HStack {
                     Button {
-                        appState.gameLevel = AppState.GameLevel(rawValue: level.rawValue) ?? .zero
-                        appState.state = .game
+                        if appState.topLevel >= level.rawValue {
+                            appState.gameLevel = AppState.GameLevel(rawValue: level.rawValue) ?? .zero
+                            appState.state = .game
+                        }
                     } label: {
-                        RowView(level: level.rawValue)
+                        RowView(level: level.rawValue, available: appState.topLevel >= level.rawValue)
                     }
                 }
             }

@@ -23,6 +23,9 @@ struct MainView: View {
             }
             .foregroundColor(.white)
             .font(.system(size: 124, weight: .black, design: .monospaced))
+            Text("Top level: \(appState.topLevel)")
+                .foregroundColor(.white)
+                .font(.system(size: 18, weight: .black, design: .monospaced))
             Button {
                 appState.state = .game
             } label: {
