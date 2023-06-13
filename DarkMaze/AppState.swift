@@ -8,28 +8,21 @@
 import Foundation
 
 final class AppState: ObservableObject {
+
     enum GameState {
-        case main, game, win
+        case main, game, win, level
     }
 
-    func nextLevel() -> GameLevel {
-            switch gameLevel {
-            case .zero:
-                return .one
-            case .one:
-                return .two
-            case .two:
-                return .three
-            case .three:
-                return .zero
-            }
-        }
-
-    enum GameLevel: Int {
+    enum GameLevel: Int, CaseIterable {
         case zero = 0
         case one = 1
         case two = 2
         case three = 3
+
+        func nextLevel() -> GameLevel {
+            return Self(rawValue: self.rawValue + 1) ?? .zero
+        }
+
     }
 
     @Published var state: GameState = .main

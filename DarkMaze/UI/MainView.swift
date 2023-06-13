@@ -32,16 +32,16 @@ struct MainView: View {
                     .foregroundColor(.black)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
-            //            Button {
-            //                appState.state = .win
-            //            } label: {
-            //                Text("Settings")
-            //                    .frame(width: 250, height: 50)
-            //                    .background(Color.black)
-            //                    .foregroundColor(.white)
-            //                    .font(.system(size: 24, weight: .black, design: .monospaced))
-            //                    .border(.white, width: 4)
-            //            }
+            Button {
+                appState.state = .level
+            } label: {
+                Text("Levels")
+                    .frame(width: 250, height: 50)
+                    .background(Color.black)
+                    .foregroundColor(.white)
+                    .font(.system(size: 24, weight: .black, design: .monospaced))
+                    .border(.white, width: 4)
+            }
             Toggle(isOn: $blindMode) {
                 Text(blindMode ? "Blind mode on" : "Blind mode off")
                     .foregroundColor(.white)

@@ -16,6 +16,7 @@ struct WinView: View {
             Text("WIN")
                 .foregroundColor(.white)
                 .font(.system(size: 124, weight: .black, design: .monospaced))
+
             Button {
                 appState.state = .game
             } label: {
@@ -25,28 +26,29 @@ struct WinView: View {
                     .foregroundColor(.black)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
+
             Button {
                 appState.state = .game
-                appState.gameLevel = appState.nextLevel()
+                appState.gameLevel = appState.gameLevel.nextLevel()
             } label: {
                 Text("Next level")
-                    .frame(width: 250, height: 50)
-                    .background(Color.white)
-                    .foregroundColor(.black)
-                    .font(.system(size: 24, weight: .black, design: .monospaced))
-            }
-            Button {
-                appState.state = .main
-            } label: {
-                Text("Main menu")
                     .frame(width: 250, height: 50)
                     .background(Color.black)
                     .foregroundColor(.white)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
                     .border(.white, width: 4)
             }
-        }
 
+            Button {
+                appState.state = .main
+            } label: {
+                Text("Back to main")
+                    .frame(width: 250, height: 50)
+                    .background(Color.black)
+                    .foregroundColor(.white)
+                    .font(.system(size: 18, weight: .black, design: .monospaced))
+            }
+        }
     }
 }
 

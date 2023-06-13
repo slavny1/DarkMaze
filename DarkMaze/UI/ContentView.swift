@@ -28,6 +28,9 @@ struct ContentView: View {
             } else if appState.state == .win {
                 WinView()
                     .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+            } else if appState.state == .level {
+                LevelsListView()
+                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
             }
         }
     }
