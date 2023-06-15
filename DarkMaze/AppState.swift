@@ -29,6 +29,8 @@ final class AppState: ObservableObject {
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
 
+    @Published var isOnboarding = true
+
     @Published var blindMode: Bool = false {
         didSet {
             UserDefaults.standard.set(topLevel, forKey: "blindMode")

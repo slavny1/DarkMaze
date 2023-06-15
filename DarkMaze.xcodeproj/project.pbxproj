@@ -11,6 +11,8 @@
 		13379D672A1F64460015BD93 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D662A1F64460015BD93 /* MainView.swift */; };
 		133E1A672A379F5600DF80AF /* LevelsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A662A379F5600DF80AF /* LevelsListView.swift */; };
 		133E1A692A38795A00DF80AF /* RowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A682A38795A00DF80AF /* RowView.swift */; };
+		133E1A6F2A3B4CD200DF80AF /* OnboardingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A6E2A3B4CD200DF80AF /* OnboardingData.swift */; };
+		133E1A712A3B4DAC00DF80AF /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A702A3B4DAC00DF80AF /* OnboardingView.swift */; };
 		1352FF7429FBBD14002799A9 /* DarkMazeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */; };
 		1352FF7629FBBD14002799A9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1352FF7529FBBD14002799A9 /* ContentView.swift */; };
 		1352FF7829FBBD15002799A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1352FF7729FBBD15002799A9 /* Assets.xcassets */; };
@@ -35,6 +37,8 @@
 		13379D662A1F64460015BD93 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		133E1A662A379F5600DF80AF /* LevelsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsListView.swift; sourceTree = "<group>"; };
 		133E1A682A38795A00DF80AF /* RowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowView.swift; sourceTree = "<group>"; };
+		133E1A6E2A3B4CD200DF80AF /* OnboardingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingData.swift; sourceTree = "<group>"; };
+		133E1A702A3B4DAC00DF80AF /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		1352FF7029FBBD14002799A9 /* DarkMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DarkMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkMazeApp.swift; sourceTree = "<group>"; };
 		1352FF7529FBBD14002799A9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -110,6 +114,8 @@
 			isa = PBXGroup;
 			children = (
 				1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */,
+				133E1A702A3B4DAC00DF80AF /* OnboardingView.swift */,
+				133E1A6E2A3B4CD200DF80AF /* OnboardingData.swift */,
 				139048A72A20ECAA00183643 /* AppState.swift */,
 				13379D632A1F5D780015BD93 /* UI */,
 				13379D622A1F5D540015BD93 /* GameScene */,
@@ -231,12 +237,14 @@
 				13D8F8222A2F2E2200808BBA /* BlindModeToggleStyle.swift in Sources */,
 				1352FF8829FBBE0E002799A9 /* TileNode.swift in Sources */,
 				139048A82A20ECAA00183643 /* AppState.swift in Sources */,
+				133E1A6F2A3B4CD200DF80AF /* OnboardingData.swift in Sources */,
 				1352FF8229FBBDD2002799A9 /* GameView.swift in Sources */,
 				13379D652A1F626E0015BD93 /* WinView.swift in Sources */,
 				1352FF8629FBBDFF002799A9 /* MazeLib.swift in Sources */,
 				133E1A692A38795A00DF80AF /* RowView.swift in Sources */,
 				13379D672A1F64460015BD93 /* MainView.swift in Sources */,
 				1352FF8429FBBDE4002799A9 /* GameScene.swift in Sources */,
+				133E1A712A3B4DAC00DF80AF /* OnboardingView.swift in Sources */,
 				1352FF8E29FBBE47002799A9 /* ExtDistance.swift in Sources */,
 				1352FF7429FBBD14002799A9 /* DarkMazeApp.swift in Sources */,
 			);
