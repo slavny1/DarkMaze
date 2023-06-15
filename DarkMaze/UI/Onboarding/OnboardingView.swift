@@ -14,6 +14,7 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack {
+
             LottieView(name: data.lottie, loop: .loop)
                 .frame(width: 350, height: 350)
                 .padding(.vertical)
@@ -27,6 +28,7 @@ struct OnboardingView: View {
                 .foregroundColor(.white)
                 .font(.system(size: 18, weight: .bold, design: .monospaced))
                 .multilineTextAlignment(.center)
+
             Button {
                 appState.isOnboarding = false
             } label: {

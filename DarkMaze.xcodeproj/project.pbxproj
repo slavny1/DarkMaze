@@ -95,11 +95,9 @@
 				1352FF7529FBBD14002799A9 /* ContentView.swift */,
 				13379D662A1F64460015BD93 /* MainView.swift */,
 				133E1A662A379F5600DF80AF /* LevelsListView.swift */,
-				133E1A682A38795A00DF80AF /* RowView.swift */,
-				13D8F8212A2F2E2200808BBA /* BlindModeToggleStyle.swift */,
 				1352FF8129FBBDD2002799A9 /* GameView.swift */,
 				13379D642A1F626E0015BD93 /* WinView.swift */,
-				133E1A742A3B951E00DF80AF /* LottieView.swift */,
+				133E1A7E2A3B9C3F00DF80AF /* Provisional UI */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -122,7 +120,7 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
-		133E1A7D2A3B99EF00DF80AF /* sounds */ = {
+		133E1A7D2A3B99EF00DF80AF /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
 				1352FF9429FBC036002799A9 /* bonus.mp3 */,
@@ -131,7 +129,17 @@
 				1352FF9129FBC036002799A9 /* wall.mp3 */,
 				1352FF9029FBC036002799A9 /* win.mp3 */,
 			);
-			path = sounds;
+			path = Sounds;
+			sourceTree = "<group>";
+		};
+		133E1A7E2A3B9C3F00DF80AF /* Provisional UI */ = {
+			isa = PBXGroup;
+			children = (
+				133E1A682A38795A00DF80AF /* RowView.swift */,
+				133E1A742A3B951E00DF80AF /* LottieView.swift */,
+				13D8F8212A2F2E2200808BBA /* BlindModeToggleStyle.swift */,
+			);
+			path = "Provisional UI";
 			sourceTree = "<group>";
 		};
 		1352FF6729FBBD14002799A9 = {
@@ -157,7 +165,7 @@
 				139048A72A20ECAA00183643 /* AppState.swift */,
 				13379D632A1F5D780015BD93 /* UI */,
 				13379D622A1F5D540015BD93 /* GameScene */,
-				1352FF8F29FBBEA7002799A9 /* Extension */,
+				1352FF8F29FBBEA7002799A9 /* Extensions */,
 				1352FF9A29FBC03F002799A9 /* Resources */,
 				1352FF7729FBBD15002799A9 /* Assets.xcassets */,
 				1352FF7929FBBD15002799A9 /* Preview Content */,
@@ -173,20 +181,20 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		1352FF8F29FBBEA7002799A9 /* Extension */ = {
+		1352FF8F29FBBEA7002799A9 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				1352FF8D29FBBE47002799A9 /* ExtDistance.swift */,
 				1352FF8B29FBBE37002799A9 /* ExtContact.swift */,
 			);
-			path = Extension;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		1352FF9A29FBC03F002799A9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				133E1A792A3B966A00DF80AF /* JSON animation */,
-				133E1A7D2A3B99EF00DF80AF /* sounds */,
+				133E1A7D2A3B99EF00DF80AF /* Sounds */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
