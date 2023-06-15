@@ -29,24 +29,29 @@ final class AppState: ObservableObject {
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
 
-    @Published var isOnboarding = true
+    @Published var isOnboarding = true {
+        didSet {
+            UserDefaults.standard.set(isOnboarding, forKey: "isOnboarding")
+        }
+    }
 
     @Published var blindMode: Bool = false {
         didSet {
-            UserDefaults.standard.set(topLevel, forKey: "blindMode")
+            UserDefaults.standard.set(blindMode, forKey: "blindMode")
         }
     }
 
     @Published var topLevel: Int = 0 {
         didSet {
             UserDefaults.standard.set(topLevel, forKey: "topLevel")
-            gameLevel = GameLevel(rawValue: topLevel) ?? .zero
+            self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
         }
     }
 
     init() {
         self.topLevel = UserDefaults.standard.integer(forKey: "topLevel")
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
-        self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
+//        self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+//        self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
     }
 }

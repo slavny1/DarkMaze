@@ -18,18 +18,22 @@ struct ContentView: View {
             Color.black
                 .ignoresSafeArea()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            if appState.state == .game {
-                GameView().id(appState.gameID)
-                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
-            } else if appState.state == .main {
-                MainView()
-                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
-            } else if appState.state == .win {
-                WinView()
-                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
-            } else if appState.state == .level {
-                LevelsListView()
-                    .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+            if appState.isOnboarding {
+                TabOnboardingView()
+            } else {
+                if appState.state == .game {
+                    GameView().id(appState.gameID)
+                        .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+                } else if appState.state == .main {
+                    MainView()
+                        .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+                } else if appState.state == .win {
+                    WinView()
+                        .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+                } else if appState.state == .level {
+                    LevelsListView()
+                        .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+                }
             }
         }
     }
