@@ -15,8 +15,10 @@ struct OnboardingData: Hashable, Identifiable {
     let lottie: String
 
     static let list: [OnboardingData] = [
+
         OnboardingData(id: 0, primaryText: "Welcome to Dark Maze", secondaryText: "An immersive game for visually impaired individuals", lottie: "hello"),
-        OnboardingData(id: 1, primaryText: "Explore complex Mazes", secondaryText: "Engage your senses beyond vision", lottie: ""),
-        OnboardingData(id: 2, primaryText: "Turn on sounds", secondaryText: "It's essential for navigating in the maze", lottie: "")
+        OnboardingData(id: 1, primaryText: "Explore complex Mazes", secondaryText: "Engage all your senses beyond vision for an inclusive experience", lottie: ""),
+        OnboardingData(id: 2, primaryText: "Turn on sounds and haptic", secondaryText: "It's essential features for navigating through the Maze", lottie: "")
+
     ]
 }
