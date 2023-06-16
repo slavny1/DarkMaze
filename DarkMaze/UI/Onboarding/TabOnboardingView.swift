@@ -9,18 +9,32 @@ import SwiftUI
 
 struct TabOnboardingView: View {
 
-    @State private var currentTab = 1
+    @State private var currentTab = 0
 
     var body: some View {
-        TabView(selection: $currentTab,
-                content:  {
-            ForEach(OnboardingData.list) { viewData in
-                OnboardingView(data: viewData)
-                    .tag(viewData.id)
+        ZStack {
+
+            TabView(selection: $currentTab,
+                    content:  {
+                ForEach(OnboardingData.list) { viewData in
+                    OnboardingView(data: viewData)
+                        .tag(viewData.id)
+                }
+            })
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+
+            VStack {
+                Spacer()
+                HStack(spacing: 15) {
+                    ForEach(OnboardingData.list.indices, id: \.self) { index in
+                        Capsule()
+                            .fill(Color.white)
+                            .frame(width: currentTab == index ? 20 : 7, height: 7)
+                    }
+                }
+                .padding(.bottom)
             }
-        })
-        .tabViewStyle(PageTabViewStyle())
-        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+        }
     }
 }
 
