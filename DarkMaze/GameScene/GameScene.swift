@@ -17,7 +17,7 @@ class GameScene: SKScene {
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
 
-    private let sizeConst: Int = Int(UIScreen.main.bounds.width) - 1
+    private let sizeConst: Int = Int(UIScreen.main.bounds.width) - 2
 
     private var closestDistance: CGFloat = CGFloat.infinity //
     private var distanceToNode: CGFloat? // standart distance from ball to node
@@ -52,7 +52,7 @@ class GameScene: SKScene {
     }
 
     private func createFather() {
-        guard let view = view else { return }
+//        guard let view = view else { return }
         fatherTile = SKShapeNode(rectOf: .init(width: sizeConst, height: sizeConst))
         // if it's blind mode all canvas will be black otherwise path will be gray
         fatherTile.fillColor = .black

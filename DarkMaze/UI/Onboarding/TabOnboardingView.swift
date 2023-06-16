@@ -13,13 +13,7 @@ struct TabOnboardingView: View {
 
     var body: some View {
         ZStack {
-            VStack {
-            Spacer()
-            LottieView(name: "hello", loop: .loop)
-                .frame(width: 350, height: 350)
-                .padding(.bottom, UIScreen.main.bounds.height / 2)
 
-            }
             TabView(selection: $currentTab,
                     content:  {
                 ForEach(OnboardingData.list) { viewData in
@@ -31,6 +25,9 @@ struct TabOnboardingView: View {
 
             VStack {
                 Spacer()
+                LottieView(name: "hello", loop: .loop)
+                    .frame(width: 350, height: 350)
+                    .padding(.bottom, 300)
                 HStack(spacing: 15) {
                     ForEach(OnboardingData.list.indices, id: \.self) { index in
                         Capsule()
@@ -38,7 +35,7 @@ struct TabOnboardingView: View {
                             .frame(width: currentTab == index ? 20 : 7, height: 7)
                     }
                 }
-                .padding(.bottom)
+                .padding(.bottom, 50)
             }
         }
     }
