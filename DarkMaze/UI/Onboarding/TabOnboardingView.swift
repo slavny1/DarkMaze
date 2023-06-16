@@ -14,11 +14,11 @@ struct TabOnboardingView: View {
     var body: some View {
         ZStack {
             VStack {
-
+            Spacer()
             LottieView(name: "hello", loop: .loop)
                 .frame(width: 350, height: 350)
-                .padding(.top, 100)
-                Spacer()
+                .padding(.bottom, UIScreen.main.bounds.height / 2)
+
             }
             TabView(selection: $currentTab,
                     content:  {
