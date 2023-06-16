@@ -27,6 +27,7 @@ struct MainView: View {
                 .font(.system(size: 18, weight: .black, design: .monospaced))
             Button {
                 appState.state = .game
+                appState.gameLevel = AppState.GameLevel(rawValue: appState.topLevel) ?? .zero
             } label: {
                 Text("Start game")
                     .frame(width: 250, height: 50)

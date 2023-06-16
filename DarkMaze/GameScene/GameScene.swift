@@ -211,7 +211,7 @@ class GameScene: SKScene {
         block.fillColor = .red
 
         // Delay the execution of the color revert by one second
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             // Revert the block color back to the original color
             block.fillColor = .black
         }

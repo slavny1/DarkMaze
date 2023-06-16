@@ -27,9 +27,13 @@ struct GameView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("LEVEL \(appState.gameLevel.rawValue)")
-                        .foregroundColor(.white)
-                        .font(.system(size: 24, weight: .black, design: .monospaced))
+                    Button {
+                        appState.state = .level
+                    } label: {
+                        Text("LEVEL \(appState.gameLevel.rawValue)")
+                            .foregroundColor(.white)
+                            .font(.system(size: 24, weight: .black, design: .monospaced))
+                    }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {

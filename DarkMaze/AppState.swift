@@ -44,7 +44,7 @@ final class AppState: ObservableObject {
     @Published var topLevel: Int = 0 {
         didSet {
             UserDefaults.standard.set(topLevel, forKey: "topLevel")
-            self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
+//            self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
         }
     }
 
