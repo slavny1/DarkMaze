@@ -12,6 +12,9 @@ struct WinView: View {
     @EnvironmentObject var appState: AppState
 
     var body: some View {
+
+        let isLastLevel = appState.gameLevel.rawValue == AppState.GameLevel.allCases.last?.rawValue ?? 3
+
         VStack(alignment: .center) {
             Text("WIN")
                 .foregroundColor(.white)
@@ -28,16 +31,19 @@ struct WinView: View {
             }
 
             Button {
+
                 appState.state = .game
                 appState.gameLevel = appState.gameLevel.nextLevel()
+                
             } label: {
                 Text("Next level")
                     .frame(width: 250, height: 50)
                     .background(Color.black)
-                    .foregroundColor(.white)
+                    .foregroundColor(isLastLevel ? .gray : .white)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
-                    .border(.white, width: 4)
+                    .border(isLastLevel ? .gray : .white, width: 4)
             }
+            .disabled(isLastLevel)
 
             Button {
                 appState.state = .main

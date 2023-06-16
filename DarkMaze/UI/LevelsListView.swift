@@ -21,8 +21,9 @@ struct LevelsListView: View {
                             appState.state = .game
                         }
                     } label: {
-                        RowView(level: level.rawValue, available: appState.topLevel >= level.rawValue)
+                        RowView(level: level.rawValue, isAvailable: appState.topLevel >= level.rawValue)
                     }
+                    .disabled(appState.topLevel < level.rawValue)
                 }
             }
         }

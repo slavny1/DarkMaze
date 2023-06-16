@@ -10,27 +10,27 @@ import SwiftUI
 struct RowView: View {
 
     var level: Int
-    var available: Bool
+    var isAvailable: Bool
 
     var body: some View {
 
             HStack {
                 Text("Level \(String(level))")
-                    .foregroundColor(available ? .white : .gray)
+                    .foregroundColor(isAvailable ? .white : .gray)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                 Spacer()
-                Image(systemName: "play")
-                    .foregroundColor(available ? .white : .gray)
+                Image(systemName: isAvailable ? "play" : "play.slash")
+                    .foregroundColor(isAvailable ? .white : .gray)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
             }
             .padding()
-            .border(available ? .white : .gray, width: 4)
+            .border(isAvailable ? .white : .gray, width: 4)
     }
 }
 
 struct RowView_Previews: PreviewProvider {
     static var previews: some View {
-        RowView(level: 1, available: true)
+        RowView(level: 1, isAvailable: false)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()
