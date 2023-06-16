@@ -13,6 +13,13 @@ struct TabOnboardingView: View {
 
     var body: some View {
         ZStack {
+            VStack {
+
+            LottieView(name: "hello", loop: .loop)
+                .frame(width: 350, height: 350)
+                .padding(.top, 100)
+                Spacer()
+            }
             TabView(selection: $currentTab,
                     content:  {
                 ForEach(OnboardingData.list) { viewData in

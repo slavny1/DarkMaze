@@ -14,17 +14,14 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack {
-
-            LottieView(name: data.lottie, loop: .loop)
-                .frame(width: 350, height: 350)
-                .padding(.vertical)
-
+            Spacer()
             Text(data.primaryText)
                 .foregroundColor(.white)
                 .font(.system(size: 24, weight: .black, design: .monospaced))
                 .padding(.bottom, 10)
             Text(data.secondaryText)
                 .padding(.bottom, 50)
+                .padding(.horizontal)
                 .foregroundColor(.white)
                 .font(.system(size: 18, weight: .bold, design: .monospaced))
                 .multilineTextAlignment(.center)
@@ -38,7 +35,7 @@ struct OnboardingView: View {
                     .font(.system(size: 16, weight: .bold, design: .monospaced))
                     .border(.white, width: 2)
             }
-            .padding(.bottom)
+            .padding(.bottom, 100)
         }
     }
 }
