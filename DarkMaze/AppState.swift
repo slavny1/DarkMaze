@@ -51,7 +51,7 @@ final class AppState: ObservableObject {
     init() {
         self.topLevel = UserDefaults.standard.integer(forKey: "topLevel")
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
-//        self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+        self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
 //        self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
     }
 }

@@ -13,7 +13,6 @@ struct TabOnboardingView: View {
 
     var body: some View {
         ZStack {
-
             TabView(selection: $currentTab,
                     content:  {
                 ForEach(OnboardingData.list) { viewData in
