@@ -14,6 +14,7 @@ class TileNode: SKShapeNode {
         case wall
         case gray
         case win
+        case black
         case none
     }
 
@@ -27,6 +28,8 @@ class TileNode: SKShapeNode {
                     self.fillColor = .black
                 case .gray:
                     self.fillColor = .gray
+                case .black:
+                    self.fillColor = .black
                 case .win:
                     self.fillColor = .white
                 case .none:
