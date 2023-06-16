@@ -17,6 +17,8 @@ class GameScene: SKScene {
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
 
+    private let sizeConst: Int = Int(UIScreen.main.bounds.width) - 1
+
     private var closestDistance: CGFloat = CGFloat.infinity //
     private var distanceToNode: CGFloat? // standart distance from ball to node
 
@@ -51,10 +53,10 @@ class GameScene: SKScene {
 
     private func createFather() {
         guard let view = view else { return }
-        fatherTile = SKShapeNode(rectOf: .init(width: view.frame.width, height: view.frame.width))
+        fatherTile = SKShapeNode(rectOf: .init(width: sizeConst, height: sizeConst))
         // if it's blind mode all canvas will be black otherwise path will be gray
-        fatherTile.fillColor = appState?.blindMode ?? false ? .black : .gray
-        fatherTile.strokeColor = .clear
+        fatherTile.fillColor = .black
+        fatherTile.strokeColor = .black
         fatherTile.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(fatherTile)
     }
@@ -66,10 +68,10 @@ class GameScene: SKScene {
 //        let mazeLevelOne = MazeLibrary.randomMaze(level: .two)
 
         // Define size of a tile
-        let tileWidth = Int(fatherTile.frame.size.width) / mazeLevelOne.count
+        let tileWidth = sizeConst / mazeLevelOne.count
 
         // Define an offset for the first tile in a maze
-        let mazeOffset = CGFloat(tileWidth / 2) - fatherTile.frame.width / 2 + fatherTile.lineWidth
+        let mazeOffset = tileWidth / 2 - sizeConst / 2 + 1 // 1 - stroke width for fatherTile
 
         // Set a position for the ball
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
@@ -80,9 +82,10 @@ class GameScene: SKScene {
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
+                tile.type = appState!.blindMode ? .black : .gray
 
                 // define position of a tile
-                tile.position = CGPoint(x: Int(mazeOffset) + column * tileWidth, y: Int(mazeOffset) + row * tileWidth)
+                tile.position = CGPoint(x: mazeOffset + column * tileWidth, y: mazeOffset + row * tileWidth)
 
                 // If matrix number is == 0 then its BLOCK
                 if mazeLevelOne[row][column] == 0 {
