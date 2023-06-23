@@ -9,9 +9,7 @@ import SwiftUI
 
 @main
 struct DarkMazeApp: App {
-
     @ObservedObject var appState = AppState()
-
     var body: some Scene {
         WindowGroup {
             NavigationView {
