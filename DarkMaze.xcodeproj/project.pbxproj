@@ -64,6 +64,7 @@
 		1352FF9429FBC036002799A9 /* bonus.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bonus.mp3; sourceTree = "<group>"; };
 		139048A72A20ECAA00183643 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		13D8F8212A2F2E2200808BBA /* BlindModeToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindModeToggleStyle.swift; sourceTree = "<group>"; };
+		13DE72CD2A4635FE000BBBE6 /* DarkMazeDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DarkMazeDebug.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +162,7 @@
 		1352FF7229FBBD14002799A9 /* DarkMaze */ = {
 			isa = PBXGroup;
 			children = (
+				13DE72CD2A4635FE000BBBE6 /* DarkMazeDebug.entitlements */,
 				1352FF7329FBBD14002799A9 /* DarkMazeApp.swift */,
 				139048A72A20ECAA00183643 /* AppState.swift */,
 				13379D632A1F5D780015BD93 /* UI */,
@@ -424,6 +426,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DarkMaze/DarkMazeDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"DarkMaze/Preview Content\"";
