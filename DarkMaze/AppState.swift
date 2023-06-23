@@ -8,23 +8,6 @@
 import Foundation
 
 final class AppState: ObservableObject {
-
-    enum GameState {
-        case main, game, win, level
-    }
-
-    enum GameLevel: Int, CaseIterable {
-        case zero
-        case one
-        case two
-        case three
-
-        func nextLevel() -> GameLevel {
-            return Self(rawValue: self.rawValue + 1) ?? .three
-        }
-
-    }
-
     @Published var state: GameState = .main
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
@@ -53,5 +36,29 @@ final class AppState: ObservableObject {
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
         self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
 //        self.gameLevel = GameLevel(rawValue: topLevel) ?? .zero
+    }
+}
+
+// Mark: GameState
+
+extension AppState {
+    enum GameState {
+        case main, game, win, level
+    }
+}
+
+// Mark: GameLevel
+
+extension AppState {
+    enum GameLevel: Int, CaseIterable {
+        case zero
+        case one
+        case two
+        case three
+
+        func nextLevel() -> GameLevel {
+            return Self(rawValue: self.rawValue + 1) ?? .three
+        }
+
     }
 }
