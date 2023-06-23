@@ -25,9 +25,11 @@ class GameScene: SKScene {
     private var ball: SKShapeNode!
     var fatherTile: SKShapeNode!
 
+    //аудио в отдельный класс
     private var audioPlayer: AVAudioPlayer?
     private var volume: Float = 0
 
+    //поместить  в отдельный класс хаптик
     private let tapFeedbackBallTouched = UIImpactFeedbackGenerator(style: .heavy)
     private let tapFeedbackBallFound = UIImpactFeedbackGenerator(style: .light)
     private let tapFeedbackBallMoving = UISelectionFeedbackGenerator()
@@ -127,6 +129,7 @@ class GameScene: SKScene {
 
     // MARK: Moving music
 
+    //тоже другой класс
     private func moveSound(volume: Float) {
 
         guard let url = Bundle.main.url(forResource: "ufo", withExtension: "mp3") else { return }
