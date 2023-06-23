@@ -14,10 +14,10 @@ final class AppState: ObservableObject {
     }
 
     enum GameLevel: Int, CaseIterable {
-        case zero = 0
-        case one = 1
-        case two = 2
-        case three = 3
+        case zero
+        case one
+        case two
+        case three
 
         func nextLevel() -> GameLevel {
             return Self(rawValue: self.rawValue + 1) ?? .three
