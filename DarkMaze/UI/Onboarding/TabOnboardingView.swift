@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct TabOnboardingView: View {
-
     @State private var currentTab = 0
 
     var body: some View {
         ZStack {
-
             TabView(selection: $currentTab,
                     content:  {
                 ForEach(OnboardingData.list) { viewData in

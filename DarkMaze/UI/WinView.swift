@@ -64,5 +64,6 @@ struct WinView_Previews: PreviewProvider {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()
+            .environmentObject(AppState.init())
     }
 }
