@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  AppFlowView.swift
 //  DarkMaze
 //
 //  Created by Viacheslav on 28/04/23.
@@ -7,11 +7,9 @@
 
 import SwiftUI
 
+struct AppFlowView: View {
 
-
-struct ContentView: View {
-
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var appState: AppState
 
     var body: some View {
         ZStack {
@@ -44,7 +42,7 @@ struct ContentView_Previews: PreviewProvider {
     @ObservedObject static var appState = AppState()
     
     static var previews: some View {
-        ContentView()
+        AppFlowView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .environmentObject(appState)
             .background(Color.black)

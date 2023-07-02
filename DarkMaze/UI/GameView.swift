@@ -14,10 +14,9 @@ struct GameView: View {
     @EnvironmentObject var appState: AppState
     
     var scene: SKScene {
-        let scene = GameScene()
+        let scene = GameScene(appState: appState,
+                              size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width))
         scene.scaleMode = .aspectFit
-        scene.appState = appState
-        scene.size = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
         return scene
     }
     

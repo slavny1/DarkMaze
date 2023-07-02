@@ -8,34 +8,41 @@
 import Foundation
 import SpriteKit
 
-class TileNode: SKShapeNode {
+final class TileNode: SKShapeNode {
+    private enum Constants {
+        static let lineWidth: CGFloat = 1
+    }
 
+    // Naming: Kind
     enum TileType {
         case wall
         case gray
         case win
         case black
         case none
+
+        var fillColor: UIColor {
+            switch self {
+            case .wall:
+                return .black
+            case .gray:
+                return .gray
+            case .black:
+                return .black
+            case .win:
+                return .white
+            case .none:
+                return .clear
+            }
+        }
     }
 
-    var type: TileType? = nil {
+    var type: TileType = .none {
         didSet {
-            self.strokeColor = .white
-            self.lineWidth = 1
-            if let type = type {
-                switch type {
-                case .wall:
-                    self.fillColor = .black
-                case .gray:
-                    self.fillColor = .gray
-                case .black:
-                    self.fillColor = .black
-                case .win:
-                    self.fillColor = .white
-                case .none:
-                    self.fillColor = .clear
-                }
-            }
+            // move to func
+            strokeColor = .white
+            lineWidth = Constants.lineWidth
+            fillColor = type.fillColor
         }
     }
 }

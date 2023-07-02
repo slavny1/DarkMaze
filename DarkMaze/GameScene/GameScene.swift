@@ -10,14 +10,17 @@ import SpriteKit
 import UIKit
 import AVFoundation
 
-class GameScene: SKScene {
+final class GameScene: SKScene {
+    private enum Constants {
+        static let borderLineWidth: CGFloat = 1
+    }
 
-    var appState: AppState?
+    private var appState: AppState
 
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
 
-    private let sizeConst: Int = Int(UIScreen.main.bounds.width) - 2
+    private let sizeConst: CGFloat = UIScreen.main.bounds.width - 2 * Constants.borderLineWidth
 
     private var closestDistance: CGFloat = CGFloat.infinity //
     private var distanceToNode: CGFloat? // standart distance from ball to node
@@ -43,6 +46,15 @@ class GameScene: SKScene {
         static let win: UInt32 = 0b100
     }
 
+    init(appState: AppState, size: CGSize) {
+        self.appState = appState
+        super.init(size: size)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func didMove(to view: SKView) {
         createFather()
         createMaze()
@@ -66,11 +78,11 @@ class GameScene: SKScene {
     // MARK: Maze creation
 
     private func createMaze() {
-        let mazeLevelOne = MazeLibrary.randomMaze(level: appState?.gameLevel ?? .two)
+        let mazeLevelOne = MazeLibrary.randomMaze(level: appState.gameLevel)
 //        let mazeLevelOne = MazeLibrary.randomMaze(level: .two)
 
         // Define size of a tile
-        let tileWidth = sizeConst / mazeLevelOne.count
+        let tileWidth = sizeConst / CGFloat(mazeLevelOne.count)
 
         // Define an offset for the first tile in a maze
         let mazeOffset = tileWidth / 2 - sizeConst / 2 + 1 // 1 - stroke width for fatherTile
@@ -84,10 +96,11 @@ class GameScene: SKScene {
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-                tile.type = appState!.blindMode ? .black : .gray
+                tile.type = appState.blindMode ? .black : .gray
 
                 // define position of a tile
-                tile.position = CGPoint(x: mazeOffset + column * tileWidth, y: mazeOffset + row * tileWidth)
+                tile.position = CGPoint(x: mazeOffset + CGFloat(column) * tileWidth,
+                                        y: mazeOffset + CGFloat(row) * tileWidth)
 
                 // If matrix number is == 0 then its BLOCK
                 if mazeLevelOne[row][column] == 0 {
@@ -232,9 +245,9 @@ class GameScene: SKScene {
         audioPlayer?.stop()
         run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
         AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-        if (appState?.topLevel ?? 0 <= (appState?.gameLevel.rawValue)!) && appState!.topLevel < AppState.GameLevel.allCases.last?.rawValue ?? 6 {
-            appState?.topLevel += 1
+        if (appState.topLevel <= appState.gameLevel) && appState.topLevel < appState.gameLevel.lastLevel {
+            appState.topLevel = appState.topLevel.nextLevel()
         }
-        appState?.state = .win
+        appState.state = .win
     }
 }

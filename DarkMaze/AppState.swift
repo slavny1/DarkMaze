@@ -26,7 +26,7 @@ final class AppState: ObservableObject {
         }
     }
 
-    @Published var topLevel: Int = 0 {
+    @Published var topLevel: GameLevel {
         didSet {
 //            storage.save(.topLevel, value: topLevel)
             UserDefaults.standard.set(topLevel, forKey: "topLevel")
@@ -36,7 +36,7 @@ final class AppState: ObservableObject {
 //    var storage: Storage
 
     init() {
-        self.topLevel = UserDefaults.standard.integer(forKey: "topLevel")
+        self.topLevel = .init(rawValue: UserDefaults.standard.integer(forKey: "topLevel")) ?? .zero
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
         self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
 
@@ -64,16 +64,22 @@ extension AppState {
 // Mark: GameLevel
 
 extension AppState {
-    enum GameLevel: Int, CaseIterable {
+    enum GameLevel: Int, CaseIterable, Comparable {
+        static func < (lhs: AppState.GameLevel, rhs: AppState.GameLevel) -> Bool {
+            lhs.rawValue < rhs.rawValue
+        }
+
         case zero
         case one
         case two
         case three
 
+        var isLastLevel: Bool { self == lastLevel }
+        var lastLevel: Self { .three }
+
         func nextLevel() -> GameLevel {
             return Self(rawValue: self.rawValue + 1) ?? .three
         }
-
     }
 }
 

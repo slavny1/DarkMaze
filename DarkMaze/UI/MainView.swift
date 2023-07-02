@@ -22,12 +22,12 @@ struct MainView: View {
             }
             .foregroundColor(.white)
             .font(.system(size: 124, weight: .black, design: .monospaced))
-            Text("Top level: \(appState.topLevel)")
+            Text("Top level: \(appState.topLevel.rawValue)")
                 .foregroundColor(.white)
                 .font(.system(size: 18, weight: .black, design: .monospaced))
             Button {
                 appState.state = .game
-                appState.gameLevel = AppState.GameLevel(rawValue: appState.topLevel) ?? .zero
+                appState.gameLevel = appState.topLevel
             } label: {
                 Text("Start game")
                     .frame(width: 250, height: 50)

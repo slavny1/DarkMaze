@@ -10,6 +10,7 @@ import SpriteKit
 
 extension GameScene {
 
+    // write why commented
 //    func distance(from ball: SKShapeNode, to tile: SKShapeNode) -> CGFloat {
 //        let xDistance = ball.position.x - tile.position.x
 //        let yDistance = ball.position.y - tile.position.y
