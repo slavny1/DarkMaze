@@ -11,8 +11,6 @@ import CoreHaptics
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
-
-    private let toggleTappedHaptic = UIImpactFeedbackGenerator(style: .light)
     
     var body: some View {
         VStack {
@@ -28,6 +26,7 @@ struct MainView: View {
             Button {
                 appState.state = .game
                 appState.gameLevel = appState.topLevel
+                HapticManager.buttonTapped()
             } label: {
                 Text("Start game")
                     .frame(width: 250, height: 50)
@@ -37,6 +36,7 @@ struct MainView: View {
             }
             Button {
                 appState.state = .level
+                HapticManager.buttonTapped()
             } label: {
                 Text("Levels")
                     .frame(width: 250, height: 50)
@@ -56,7 +56,7 @@ struct MainView: View {
             .onChange(of: appState.blindMode) { newValue in
                 // Play system sound effect for toggle switching
                 AudioServicesPlaySystemSound(1104) // Use the desired system sound effect ID
-                toggleTappedHaptic.impactOccurred()
+                HapticManager.buttonTapped()
             }
         }
     }

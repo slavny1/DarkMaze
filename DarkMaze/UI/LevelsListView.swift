@@ -20,6 +20,7 @@ struct LevelsListView: View {
                             appState.gameLevel = level
                             appState.state = .game
                         }
+                        HapticManager.buttonTapped()
                     } label: {
                         RowView(level: level, isAvailable: appState.topLevel >= level)
                     }
