@@ -20,6 +20,9 @@ struct MainView: View {
             }
             .foregroundColor(.white)
             .font(.system(size: 124, weight: .black, design: .monospaced))
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Dark Maze")
+            .accessibilityHint("Main menu of the game")
             Text("Top level: \(appState.topLevel.rawValue)")
                 .foregroundColor(.white)
                 .font(.system(size: 18, weight: .black, design: .monospaced))
@@ -34,6 +37,7 @@ struct MainView: View {
                     .foregroundColor(.black)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
+            .accessibilityHint("Will start a new game at level \(appState.topLevel.rawValue)")
             Button {
                 appState.state = .level
                 HapticManager.buttonTapped()
@@ -45,6 +49,7 @@ struct MainView: View {
                     .font(.system(size: 24, weight: .black, design: .monospaced))
                     .border(.white, width: 4)
             }
+            .accessibilityHint("Open a list of levels")
             Toggle(isOn: $appState.blindMode) {
                 Text(appState.blindMode ? "Blind mode on" : "Blind mode off")
                     .foregroundColor(.white)
@@ -58,6 +63,7 @@ struct MainView: View {
                 AudioServicesPlaySystemSound(1104) // Use the desired system sound effect ID
                 HapticManager.buttonTapped()
             }
+            .accessibilityHidden(true)
         }
     }
 }

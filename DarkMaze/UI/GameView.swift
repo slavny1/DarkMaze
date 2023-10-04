@@ -33,6 +33,7 @@ struct GameView: View {
                             .foregroundColor(.white)
                             .font(.system(size: 24, weight: .black, design: .monospaced))
                     }
+                    .accessibilityHint("Double tap to go to list of all levels")
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -47,6 +48,7 @@ struct GameView: View {
                                 .font(.system(size: 18, weight: .black, design: .monospaced))
                         }
                     }
+                    .accessibilityLabel("Back to main menu")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 25) {
@@ -62,6 +64,8 @@ struct GameView: View {
                                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                             }
                         }
+                        .accessibilityLabel("Reset the game")
+                        .accessibilityHint("Generate a new maze at the same level")
                     }
                 }
             }

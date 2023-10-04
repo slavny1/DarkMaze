@@ -26,6 +26,7 @@ struct WinView: View {
                     .foregroundColor(.black)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
+            .accessibilityHint("Start a new game at the same level")
 
             Button {
 
@@ -41,6 +42,7 @@ struct WinView: View {
                     .border(appState.gameLevel.isLastLevel ? .gray : .white, width: 4)
             }
             .disabled(appState.gameLevel.isLastLevel)
+            .accessibilityHint(appState.gameLevel.isLastLevel ? "Next level unavailable yet. Wait for updates" : "Go to the next level")
 
             Button {
                 appState.state = .main
@@ -51,6 +53,7 @@ struct WinView: View {
                     .foregroundColor(.white)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
             }
+            .accessibilityLabel("Back to main menu")
         }
     }
 }

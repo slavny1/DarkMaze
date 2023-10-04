@@ -26,7 +26,7 @@ struct TabOnboardingView: View {
                 }
             })
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-
+            .accessibilityHint("Swipe right to go to the next screen")
             VStack {
                 Spacer()
                 LottieView(name: "hello", loop: .loop)
@@ -38,9 +38,11 @@ struct TabOnboardingView: View {
                             .fill(Color.white)
                             .frame(width: currentTab == index ? 20 : 7, height: 7)
                     }
+
                 }
                 .padding(.bottom, 50)
             }
+            .accessibilityHidden(true)
         }
     }
 }

@@ -35,6 +35,7 @@ struct LevelsListView: View {
                     .foregroundColor(.white)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
             }
+
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     appState.state = .main
@@ -47,6 +48,7 @@ struct LevelsListView: View {
                             .foregroundColor(.white)
                             .font(.system(size: 18, weight: .black, design: .monospaced))
                     }
+                    .accessibilityLabel("Back to main menu")
                 }
             }
         }

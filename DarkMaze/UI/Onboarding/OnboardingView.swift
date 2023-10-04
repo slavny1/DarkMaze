@@ -37,6 +37,8 @@ struct OnboardingView: View {
             }
             .padding(.bottom, 100)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("Double tap to Go to the main menu")
     }
 }
 

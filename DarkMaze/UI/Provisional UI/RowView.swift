@@ -25,6 +25,7 @@ struct RowView: View {
             }
             .padding()
             .border(isAvailable ? .white : .gray, width: 4)
+            .accessibilityLabel(isAvailable ? "Level \(String(level.rawValue))" : "Level \(String(level.rawValue)) unavailable")
     }
 }
 
