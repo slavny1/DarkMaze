@@ -27,7 +27,7 @@ struct OnboardingView: View {
                 .multilineTextAlignment(.center)
 
             Button {
-                appState.isOnboarding = true
+                appState.isOnboarding = false
             } label: {
                 Text("Skip onboarding")
                     .frame(width: 200, height: 40)

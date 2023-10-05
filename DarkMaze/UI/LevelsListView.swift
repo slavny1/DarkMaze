@@ -54,10 +54,13 @@ struct LevelsListView: View {
 }
 
 struct LevelsListView_Previews: PreviewProvider {
+    @ObservedObject static var appState = AppState()
+    
     static var previews: some View {
         LevelsListView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()
+            .environmentObject(AppState())
     }
 }
