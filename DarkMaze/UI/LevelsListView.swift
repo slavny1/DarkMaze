@@ -16,14 +16,15 @@ struct LevelsListView: View {
             ForEach(AppState.GameLevel.allCases, id: \.self) { level in
                 HStack {
                     Button {
-                        if appState.topLevel >= level.rawValue {
-                            appState.gameLevel = AppState.GameLevel(rawValue: level.rawValue) ?? .zero
+                        if appState.topLevel >= level {
+                            appState.gameLevel = level
                             appState.state = .game
                         }
+                        HapticManager.buttonTapped()
                     } label: {
-                        RowView(level: level.rawValue, isAvailable: appState.topLevel >= level.rawValue)
+                        RowView(level: level, isAvailable: appState.topLevel >= level)
                     }
-                    .disabled(appState.topLevel < level.rawValue)
+                    .disabled(appState.topLevel < level)
                 }
             }
         }

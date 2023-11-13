@@ -8,16 +8,18 @@
 import Foundation
 import SpriteKit
 import UIKit
-import AVFoundation
 
-class GameScene: SKScene {
+final class GameScene: SKScene {
+    private enum Constants {
+        static let borderLineWidth: CGFloat = 1
+    }
 
-    var appState: AppState?
+    private var appState: AppState
 
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
 
-    private let sizeConst: Int = Int(UIScreen.main.bounds.width) - 2
+    private let sizeConst: CGFloat = UIScreen.main.bounds.width - 2 * Constants.borderLineWidth
 
     private var closestDistance: CGFloat = CGFloat.infinity //
     private var distanceToNode: CGFloat? // standart distance from ball to node
@@ -25,15 +27,8 @@ class GameScene: SKScene {
     private var ball: SKShapeNode!
     var fatherTile: SKShapeNode!
 
-    //аудио в отдельный класс
-    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AudioManager?
     private var volume: Float = 0
-
-    //поместить  в отдельный класс хаптик
-    private let tapFeedbackBallTouched = UIImpactFeedbackGenerator(style: .heavy)
-    private let tapFeedbackBallFound = UIImpactFeedbackGenerator(style: .light)
-    private let tapFeedbackBallMoving = UISelectionFeedbackGenerator()
-    private let tapFeedbackCollision = UINotificationFeedbackGenerator()
 
     struct PhysicsCategory {
         static let none: UInt32 = 0
@@ -43,18 +38,26 @@ class GameScene: SKScene {
         static let win: UInt32 = 0b100
     }
 
+    init(appState: AppState, size: CGSize) {
+        self.appState = appState
+        super.init(size: size)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func didMove(to view: SKView) {
         createFather()
         createMaze()
         createBall()
-        moveSound(volume: volume)
+        audioPlayer = AudioManager()
 
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
     }
 
     private func createFather() {
-//        guard let view = view else { return }
         fatherTile = SKShapeNode(rectOf: .init(width: sizeConst, height: sizeConst))
         // if it's blind mode all canvas will be black otherwise path will be gray
         fatherTile.fillColor = .black
@@ -66,14 +69,13 @@ class GameScene: SKScene {
     // MARK: Maze creation
 
     private func createMaze() {
-        let mazeLevelOne = MazeLibrary.randomMaze(level: appState?.gameLevel ?? .two)
-//        let mazeLevelOne = MazeLibrary.randomMaze(level: .two)
+        let mazeLevelOne = MazeLibrary.randomMaze(level: appState.gameLevel)
 
         // Define size of a tile
-        let tileWidth = sizeConst / mazeLevelOne.count
+        let tileWidth = sizeConst / CGFloat(mazeLevelOne.count)
 
         // Define an offset for the first tile in a maze
-        let mazeOffset = tileWidth / 2 - sizeConst / 2 + 1 // 1 - stroke width for fatherTile
+        let mazeOffset = tileWidth / 2 - sizeConst / 2 + Constants.borderLineWidth
 
         // Set a position for the ball
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
@@ -84,10 +86,11 @@ class GameScene: SKScene {
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-                tile.type = appState!.blindMode ? .black : .gray
+                tile.type = appState.blindMode ? .black : .gray
 
                 // define position of a tile
-                tile.position = CGPoint(x: mazeOffset + column * tileWidth, y: mazeOffset + row * tileWidth)
+                tile.position = CGPoint(x: mazeOffset + CGFloat(column) * tileWidth,
+                                        y: mazeOffset + CGFloat(row) * tileWidth)
 
                 // If matrix number is == 0 then its BLOCK
                 if mazeLevelOne[row][column] == 0 {
@@ -127,23 +130,6 @@ class GameScene: SKScene {
         fatherTile.addChild(ball)
     }
 
-    // MARK: Moving music
-
-    //тоже другой класс
-    private func moveSound(volume: Float) {
-
-        guard let url = Bundle.main.url(forResource: "ufo", withExtension: "mp3") else { return }
-
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.enableRate = true
-            audioPlayer?.numberOfLoops = -1
-            audioPlayer?.volume = volume
-        } catch let error {
-            print(error.localizedDescription)
-        }
-    }
-
     // MARK: Touches
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -152,8 +138,8 @@ class GameScene: SKScene {
         if ball.frame.contains(touchLocation) {
             lastTouchLocation = touchLocation
             print("Ball tapped")
-            tapFeedbackBallTouched.impactOccurred()
-            audioPlayer?.play()
+            HapticManager.ballTouched()
+            audioPlayer?.moveSound(volume: volume)
         }
     }
 
@@ -167,13 +153,13 @@ class GameScene: SKScene {
 
         //change volume depends on a distance from the edge or black tile (const 10 is for reducing volume of moving ball compare with collision sounds)
         //if wall or edge more than half tile size volume is constant
-        audioPlayer?.volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 20) : 0.01
-
+        volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 20) : 0.01
+        audioPlayer?.updateVolume(volume: volume)
         // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
-            tapFeedbackBallTouched.impactOccurred()
-//            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
-//            audioPlayer?.play()
+            HapticManager.ballTouched()
+            //            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
+            //            audioPlayer?.play()
         }
         guard lastTouchLocation != nil else { return }
 
@@ -184,25 +170,26 @@ class GameScene: SKScene {
               ball.position.y < fatherTile.frame.height / 2 else {
             // return ball to the initial position in case it fell out of the border
             ball.position = initialPosition!
-            tapFeedbackCollision.notificationOccurred(.warning)
+            HapticManager.collisionOccurred()
             run(SKAction.playSoundFileNamed("edge.mp3", waitForCompletion: false))
             lastTouchLocation = nil
             return
         }
 
         // Ball moving
-        tapFeedbackBallMoving.selectionChanged()
+        HapticManager.ballMoving()
         ball.position = touchLocation
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        audioPlayer?.stop()
+        audioPlayer?.stopAudio()
         lastTouchLocation = nil
         print(closestDistance)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        audioPlayer?.stop()
+
+        audioPlayer?.stopAudio()
         lastTouchLocation = nil
     }
 
@@ -219,8 +206,9 @@ class GameScene: SKScene {
             block.fillColor = .black
         }
         
-        tapFeedbackCollision.notificationOccurred(.error)
-        audioPlayer?.stop()
+        HapticManager.collisionOccurred()
+
+        audioPlayer?.stopAudio()
         run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
         lastTouchLocation = nil
         print(closestDistance)
@@ -228,13 +216,14 @@ class GameScene: SKScene {
     }
 
     func ballCollideWithWin(ball: SKShapeNode, block: SKShapeNode) {
-        print("Win detected")
-        audioPlayer?.stop()
+        audioPlayer?.stopAudio()
+        HapticManager.ballWin()
         run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
-        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-        if (appState?.topLevel ?? 0 <= (appState?.gameLevel.rawValue)!) && appState!.topLevel < AppState.GameLevel.allCases.last?.rawValue ?? 6 {
-            appState?.topLevel += 1
+//        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+        if (appState.topLevel <= appState.gameLevel) && appState.topLevel < appState.gameLevel.lastLevel {
+            appState.topLevel = appState.gameLevel.nextLevel()
+//            appState.topLevel = .one
         }
-        appState?.state = .win
+        appState.state = .win
     }
 }

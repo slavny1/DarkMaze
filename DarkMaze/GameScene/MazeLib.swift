@@ -7,9 +7,15 @@
 
 import Foundation
 
-class MazeLibrary {
+enum MazeLibrary {
+    private static let levels: [AppState.GameLevel: [[[UInt8]]] ] = [
+        .zero: mazesLevelZero,
+        .one: mazesLevelOne,
+        .two: mazesLevelTwo,
+        .three: mazesLevelThree
+    ]
 
-    static let mazesLevelZero = [
+    private static let mazesLevelZero: [[[UInt8]]] = [
         [
             [1, 1, 0, 1],
             [0, 1, 1, 1],
@@ -23,7 +29,7 @@ class MazeLibrary {
             [0, 1, 1, 1]
         ]
     ]
-    static let mazesLevelOne = [
+    private static let mazesLevelOne: [[[UInt8]]] = [
         [
             [1, 1, 0, 1, 1],
             [0, 1, 1, 1, 0],
@@ -53,7 +59,8 @@ class MazeLibrary {
             [1, 1, 1, 1, 1]
         ]
     ]
-    static let mazesLevelTwo = [
+
+    private static let mazesLevelTwo: [[[UInt8]]] = [
         [
             [1, 1, 0, 1, 1, 1],
             [0, 1, 1, 1, 0, 0],
@@ -87,7 +94,8 @@ class MazeLibrary {
             [1, 1, 0, 1, 1, 1]
         ]
     ]
-    static let mazesLevelThree = [
+
+    private static let mazesLevelThree: [[[UInt8]]] = [
         [
             [1, 1, 0, 1, 1, 1, 1],
             [0, 1, 1, 1, 0, 0, 1],
@@ -153,16 +161,8 @@ class MazeLibrary {
         ]
     ]
 
-    static func randomMaze(level: AppState.GameLevel) -> [[Int]] {
-        switch level {
-        case .zero:
-            return mazesLevelZero.randomElement()!
-        case .one:
-            return mazesLevelOne.randomElement()!
-        case .two:
-            return mazesLevelTwo.randomElement()!
-        case .three:
-            return mazesLevelThree.randomElement()!
-        }
+    static func randomMaze(level: AppState.GameLevel) -> [[UInt8]] {
+        guard let level = levels[level], !level.isEmpty else { fatalError() }
+        return level.randomElement()!
     }
 }

@@ -13,7 +13,7 @@ struct DarkMazeApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                ContentView()
+                AppFlowView()
                     .environmentObject(appState)
             }
         }
