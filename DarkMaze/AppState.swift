@@ -26,7 +26,7 @@ final class AppState: ObservableObject {
 
     @Published var topLevel: GameLevel {
         didSet {
-            UserDefaults.standard.set(topLevel, forKey: "topLevel")
+            UserDefaults.standard.set(topLevel.rawValue, forKey: "topLevel")
         }
     }
 

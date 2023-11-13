@@ -26,7 +26,6 @@ struct TabOnboardingView: View {
                 }
             })
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-
             VStack {
                 Spacer()
                 LottieView(name: "hello", loop: .loop)

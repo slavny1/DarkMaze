@@ -221,7 +221,8 @@ final class GameScene: SKScene {
         run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
 //        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
         if (appState.topLevel <= appState.gameLevel) && appState.topLevel < appState.gameLevel.lastLevel {
-            appState.topLevel = appState.topLevel.nextLevel()
+            appState.topLevel = appState.gameLevel.nextLevel()
+//            appState.topLevel = .one
         }
         appState.state = .win
     }
