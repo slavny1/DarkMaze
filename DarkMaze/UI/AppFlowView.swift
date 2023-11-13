@@ -16,7 +16,7 @@ struct AppFlowView: View {
             Color.black
                 .ignoresSafeArea()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            if !appState.isOnboarding {
+            if appState.isOnboarding {
                 TabOnboardingView()
             } else {
                 if appState.state == .game {

@@ -18,7 +18,7 @@ final class AppState: ObservableObject {
         }
     }
 
-    @Published var blindMode: Bool = false {
+    @Published var blindMode = false {
         didSet {
             UserDefaults.standard.set(blindMode, forKey: "blindMode")
         }
@@ -34,6 +34,7 @@ final class AppState: ObservableObject {
         self.topLevel = .init(rawValue: UserDefaults.standard.integer(forKey: "topLevel")) ?? .zero
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
         self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+
     }
 }
 
