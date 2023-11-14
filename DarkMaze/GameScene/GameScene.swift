@@ -151,8 +151,9 @@ final class GameScene: SKScene {
         // define closest distance as closest black tile to ball
         closestDistance = closestBlackTile(to: ball)
 
-        //change volume depends on a distance from the edge or black tile (const 10 is for reducing volume of moving ball compare with collision sounds)
-        //if wall or edge more than half tile size volume is constant
+        // change volume depends on a distance from the edge or black tile 
+        // (const 10 is for reducing volume of moving ball compare with collision sounds)
+        // if wall or edge more than half tile size volume is constant
         volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 20) : 0.01
         audioPlayer?.updateVolume(volume: volume)
         // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.

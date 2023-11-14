@@ -20,16 +20,16 @@ extension GameScene: SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
 
-        if ((firstBody.categoryBitMask & PhysicsCategory.ball != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.win != 0)) {
+        if (firstBody.categoryBitMask & PhysicsCategory.ball != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.win != 0) {
             if let ball = firstBody.node as? SKShapeNode,
                let win = secondBody.node as? SKShapeNode {
                 ballCollideWithWin(ball: ball, block: win)
             }
         }
 
-        if ((firstBody.categoryBitMask & PhysicsCategory.ball != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.block != 0)) {
+        if (firstBody.categoryBitMask & PhysicsCategory.ball != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.block != 0) {
             if let ball = firstBody.node as? SKShapeNode,
                let block = secondBody.node as? SKShapeNode {
                 ballCollideWithBlock(ball: ball, block: block)

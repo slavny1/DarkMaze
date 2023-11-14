@@ -42,7 +42,13 @@ struct OnboardingView: View {
 
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardingView(data: OnboardingData(id: 0, primaryText: "Welcome to Dark Maze", secondaryText: "An immersive game for visually impaired individuals"))
+        OnboardingView(
+            data: OnboardingData(
+                id: 0,
+                primaryText: "Welcome to Dark Maze",
+                secondaryText: "An immersive game for visually impaired individuals"
+            )
+        )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()

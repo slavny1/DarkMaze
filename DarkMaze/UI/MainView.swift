@@ -53,7 +53,7 @@ struct MainView: View {
             }
             .toggleStyle(BlindModeToggleStyle())
             .frame(width: 250, height: 40)
-            .onChange(of: appState.blindMode) { newValue in
+            .onChange(of: appState.blindMode) { _ in
                 // Play system sound effect for toggle switching
                 AudioServicesPlaySystemSound(1104) // Use the desired system sound effect ID
                 HapticManager.buttonTapped()

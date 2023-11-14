@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		13379D652A1F626E0015BD93 /* WinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D642A1F626E0015BD93 /* WinView.swift */; };
 		13379D672A1F64460015BD93 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D662A1F64460015BD93 /* MainView.swift */; };
+		133A7CC62B037620000580C1 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 133A7CC52B037620000580C1 /* .swiftlint.yml */; };
 		133E1A672A379F5600DF80AF /* LevelsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A662A379F5600DF80AF /* LevelsListView.swift */; };
 		133E1A692A38795A00DF80AF /* RowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A682A38795A00DF80AF /* RowView.swift */; };
 		133E1A6F2A3B4CD200DF80AF /* OnboardingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133E1A6E2A3B4CD200DF80AF /* OnboardingData.swift */; };
@@ -41,6 +42,7 @@
 /* Begin PBXFileReference section */
 		13379D642A1F626E0015BD93 /* WinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinView.swift; sourceTree = "<group>"; };
 		13379D662A1F64460015BD93 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		133A7CC52B037620000580C1 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		133E1A662A379F5600DF80AF /* LevelsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsListView.swift; sourceTree = "<group>"; };
 		133E1A682A38795A00DF80AF /* RowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowView.swift; sourceTree = "<group>"; };
 		133E1A6E2A3B4CD200DF80AF /* OnboardingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingData.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 		1352FF6729FBBD14002799A9 = {
 			isa = PBXGroup;
 			children = (
+				133A7CC52B037620000580C1 /* .swiftlint.yml */,
 				1352FF7229FBBD14002799A9 /* DarkMaze */,
 				1352FF7129FBBD14002799A9 /* Products */,
 			);
@@ -272,6 +275,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				133A7CC62B037620000580C1 /* .swiftlint.yml in Resources */,
 				1352FF9529FBC036002799A9 /* win.mp3 in Resources */,
 				1352FF7B29FBBD15002799A9 /* Preview Assets.xcassets in Resources */,
 				1352FF9629FBC036002799A9 /* wall.mp3 in Resources */,
@@ -288,6 +292,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		13E73E172B0371CE00C60D4D /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -465,6 +470,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"DarkMaze/Preview Content\"";
 				DEVELOPMENT_TEAM = 3523U23689;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Dark maze";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
@@ -501,6 +507,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"DarkMaze/Preview Content\"";
 				DEVELOPMENT_TEAM = 3523U23689;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Dark maze";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";

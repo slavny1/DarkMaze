@@ -19,4 +19,3 @@ struct DarkMazeApp: App {
         }
     }
 }
-

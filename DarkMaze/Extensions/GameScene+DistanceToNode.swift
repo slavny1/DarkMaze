@@ -40,7 +40,7 @@ extension GameScene {
         var closestDistance: CGFloat = edgeDistance(to: ball)
 
         fatherTile.children.forEach { child in
-            if let blackNode = child as? TileNode  {
+            if let blackNode = child as? TileNode {
                 if blackNode.type == .wall {
                     let distanceToBall = distance(from: ball, to: blackNode)
                     if distanceToBall < closestDistance {
