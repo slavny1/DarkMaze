@@ -9,13 +9,13 @@ import SwiftUI
 
 struct RowView: View {
 
-    var level: Int
+    var level: AppState.GameLevel
     var isAvailable: Bool
 
     var body: some View {
 
             HStack {
-                Text("Level \(String(level))")
+                Text("Level \(String(level.rawValue))")
                     .foregroundColor(isAvailable ? .white : .gray)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                 Spacer()
@@ -30,7 +30,7 @@ struct RowView: View {
 
 struct RowView_Previews: PreviewProvider {
     static var previews: some View {
-        RowView(level: 1, isAvailable: false)
+        RowView(level: .one, isAvailable: false)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .ignoresSafeArea()

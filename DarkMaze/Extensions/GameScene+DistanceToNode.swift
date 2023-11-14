@@ -10,12 +10,6 @@ import SpriteKit
 
 extension GameScene {
 
-//    func distance(from ball: SKShapeNode, to tile: SKShapeNode) -> CGFloat {
-//        let xDistance = ball.position.x - tile.position.x
-//        let yDistance = ball.position.y - tile.position.y
-//        return sqrt(xDistance * xDistance + yDistance * yDistance)
-//    }
-
     func distance(from ball: SKShapeNode, to tile: SKShapeNode) -> CGFloat {
 
         let halfTileWidth = tile.frame.width / 2
