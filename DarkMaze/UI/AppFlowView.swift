@@ -18,6 +18,7 @@ struct AppFlowView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             if appState.isOnboarding {
                 TabOnboardingView()
+
             } else {
                 if appState.state == .game {
                     GameView().id(appState.gameID)
