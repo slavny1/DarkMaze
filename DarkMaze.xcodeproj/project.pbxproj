@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		13202F632B14FA3D002E1E85 /* GameTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13202F622B14FA3D002E1E85 /* GameTextView.swift */; };
 		13379D652A1F626E0015BD93 /* WinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D642A1F626E0015BD93 /* WinView.swift */; };
 		13379D672A1F64460015BD93 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13379D662A1F64460015BD93 /* MainView.swift */; };
 		133A7CC62B037620000580C1 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 133A7CC52B037620000580C1 /* .swiftlint.yml */; };
@@ -40,6 +41,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		13202F622B14FA3D002E1E85 /* GameTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTextView.swift; sourceTree = "<group>"; };
 		13379D642A1F626E0015BD93 /* WinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinView.swift; sourceTree = "<group>"; };
 		13379D662A1F64460015BD93 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		133A7CC52B037620000580C1 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 				13379D662A1F64460015BD93 /* MainView.swift */,
 				133E1A662A379F5600DF80AF /* LevelsListView.swift */,
 				1352FF8129FBBDD2002799A9 /* GameView.swift */,
+				13202F622B14FA3D002E1E85 /* GameTextView.swift */,
 				13379D642A1F626E0015BD93 /* WinView.swift */,
 				133E1A7E2A3B9C3F00DF80AF /* Provisional UI */,
 			);
@@ -325,6 +328,7 @@
 				133E1A6F2A3B4CD200DF80AF /* OnboardingData.swift in Sources */,
 				1352FF8229FBBDD2002799A9 /* GameView.swift in Sources */,
 				13379D652A1F626E0015BD93 /* WinView.swift in Sources */,
+				13202F632B14FA3D002E1E85 /* GameTextView.swift in Sources */,
 				1352FF8629FBBDFF002799A9 /* MazeLib.swift in Sources */,
 				133E1A692A38795A00DF80AF /* RowView.swift in Sources */,
 				133E1A752A3B951E00DF80AF /* LottieView.swift in Sources */,

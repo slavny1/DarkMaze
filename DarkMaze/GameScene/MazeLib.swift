@@ -9,10 +9,26 @@ import Foundation
 
 enum MazeLibrary {
     private static let levels: [AppState.GameLevel: [[[UInt8]]] ] = [
-        .zero: mazesLevelZero,
-        .one: mazesLevelOne,
-        .two: mazesLevelTwo,
-        .three: mazesLevelThree
+        .zero: mazesLevelTutorial,
+        .one: mazesLevelZero,
+        .two: mazesLevelOne,
+        .three: mazesLevelTwo,
+        .four: mazesLevelThree
+    ]
+
+    private static let mazesLevelTutorial: [[[UInt8]]] = [
+        [
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1]
+        ],
+        [
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1]
+        ]
     ]
 
     private static let mazesLevelZero: [[[UInt8]]] = [

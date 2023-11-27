@@ -156,6 +156,7 @@ final class GameScene: SKScene {
         // if wall or edge more than half tile size volume is constant
         volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 20) : 0.01
         audioPlayer?.updateVolume(volume: volume)
+
         // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
         if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
             HapticManager.ballTouched()

@@ -58,6 +58,7 @@ extension AppState {
         case one
         case two
         case three
+        case four
 
         var isLastLevel: Bool { self == lastLevel }
         var lastLevel: Self { .three }
