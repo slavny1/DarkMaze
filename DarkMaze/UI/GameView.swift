@@ -12,6 +12,20 @@ struct GameView: View {
     @State private var gameScene: GameScene?
     @State private var status = "Find the ball, then choose a direction."
     @State private var lastJoystickMove = Date.distantPast
+    @AccessibilityFocusState private var isBallFocused: Bool
+
+    private var instructions: String {
+        switch appState.tutorialStage {
+        case 0:
+            return "Straight corridor. Move up three times to find the goal."
+        case 1:
+            return "First turn. Move up three times, then right three times."
+        case 2:
+            return "Follow the winding corridor. Listen for walls and reach the goal."
+        default:
+            return "Move the ball through the maze. Choose any direction to explore."
+        }
+    }
 
     private var heading: String {
         if let stage = appState.tutorialStage {
@@ -21,7 +35,8 @@ struct GameView: View {
     }
 
     var body: some View {
-        VStack(spacing: 12) {
+        ScrollView {
+          VStack(spacing: 12) {
             Text(heading)
                 .font(.headline)
                 .foregroundColor(.white)
@@ -29,8 +44,10 @@ struct GameView: View {
 
             if let gameScene {
                 SpriteView(scene: gameScene, transition: nil)
-                    .frame(width: UIScreen.main.bounds.width,
-                           height: UIScreen.main.bounds.width)
+                    .frame(
+                        width: min(UIScreen.main.bounds.width - 32, 390),
+                        height: min(UIScreen.main.bounds.width - 32, 390)
+                    )
                     .accessibilityHidden(true)
             }
 
@@ -49,6 +66,7 @@ struct GameView: View {
             }
             .accessibilityLabel("Player ball")
             .accessibilityValue(status)
+            .accessibilityFocused($isBallFocused)
             .accessibilityHint("Double tap to select. Use the movement buttons, or VoiceOver actions.")
             .accessibilityAction(named: Text("Move up")) { move(0, 1) }
             .accessibilityAction(named: Text("Move down")) { move(0, -1) }
@@ -93,6 +111,12 @@ struct GameView: View {
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Movement joystick")
 
+            Button("Repeat instructions") {
+                status = instructions
+                UIAccessibility.post(notification: .announcement, argument: instructions)
+            }
+            .accessibilityHint("Hear the objective for this maze again")
+
             Text("Drag the joystick, move the ball directly, or use the direction buttons.")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.8))
@@ -105,8 +129,23 @@ struct GameView: View {
                 .accessibilityLabel("Game status")
                 .accessibilityValue(status)
         }
-        .padding(.bottom, 12)
-        .onAppear(perform: setupScene)
+          .frame(maxWidth: .infinity)
+          .padding(.bottom, 12)
+        }
+        .onAppear {
+            setupScene()
+            // VoiceOver starts on the ball rather than on an inaccessible
+            // SpriteKit canvas. Four named movement actions are available.
+            if UIAccessibility.isVoiceOverRunning {
+                DispatchQueue.main.async {
+                    isBallFocused = true
+                }
+            }
+        }
+        .onDisappear {
+            gameScene?.onStatusChange = nil
+            gameScene = nil
+        }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -145,16 +184,7 @@ struct GameView: View {
 
     private func setupScene() {
         guard gameScene == nil else { return }
-        if let stage = appState.tutorialStage {
-            switch stage {
-            case 0:
-                status = "Straight corridor. Move up three times to find the goal."
-            case 1:
-                status = "First turn. Move up three times, then right three times."
-            default:
-                status = "Follow the path. Avoid the walls and listen for the goal."
-            }
-        }
+        status = instructions
         let side = UIScreen.main.bounds.width
         let scene = GameScene(appState: appState, size: CGSize(width: side, height: side))
         scene.scaleMode = .aspectFit
