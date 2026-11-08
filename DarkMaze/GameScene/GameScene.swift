@@ -171,6 +171,7 @@ final class GameScene: SKScene {
             y: mazeOffset + CGFloat(nextRow) * tileWidth
         )
         HapticManager.ballMoving()
+        audioPlayer?.playStepCue()
 
         if nextRow == goal.row && nextColumn == goal.column {
             finishLevel()
