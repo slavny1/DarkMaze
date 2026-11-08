@@ -10,20 +10,19 @@ import UIKit
 struct GameView: View {
     @EnvironmentObject private var appState: AppState
     @State private var gameScene: GameScene?
-    @State private var status = "Find the ball, then choose a direction."
     @State private var lastJoystickMove = Date.distantPast
     @AccessibilityFocusState private var isBallFocused: Bool
 
     private var instructions: String {
         switch appState.tutorialStage {
         case 0:
-            return "Straight corridor. Move up three times to find the goal."
+            return "Practice moving the ball with the joystick or direction buttons. Listen to sounds and feel vibrations as you explore the corridor."
         case 1:
-            return "First turn. Move up three times, then right three times."
+            return "Explore a corridor with a turn. Use sounds and vibrations to discover the route yourself."
         case 2:
-            return "Follow the winding corridor. Listen for walls and reach the goal."
+            return "Explore a winding maze. Listen and feel for obstacles while finding the goal."
         default:
-            return "Move the ball through the maze. Choose any direction to explore."
+            return "Move the ball through the maze using the joystick, direction buttons, or direct dragging. Let sounds and vibrations guide you."
         }
     }
 
@@ -55,7 +54,7 @@ struct GameView: View {
             // SpriteKit ball remains available for direct touch dragging.
             Button {
                 HapticManager.ballTouched()
-                status = "Ball selected. Use the direction buttons."
+                UIAccessibility.post(notification: .announcement, argument: "Ball selected. Use the movement buttons or custom VoiceOver actions.")
             } label: {
                 Label("Ball", systemImage: "circle.fill")
                     .font(.headline)
@@ -65,7 +64,6 @@ struct GameView: View {
                     .background(Color.gray.opacity(0.3), in: Capsule())
             }
             .accessibilityLabel("Player ball")
-            .accessibilityValue(status)
             .accessibilityFocused($isBallFocused)
             .accessibilityHint("Double tap to select. Use the movement buttons, or VoiceOver actions.")
             .accessibilityAction(named: Text("Move up")) { move(0, 1) }
@@ -112,7 +110,6 @@ struct GameView: View {
             .accessibilityLabel("Movement joystick")
 
             Button("Repeat instructions") {
-                status = instructions
                 UIAccessibility.post(notification: .announcement, argument: instructions)
             }
             .accessibilityHint("Hear the objective for this maze again")
@@ -122,12 +119,6 @@ struct GameView: View {
                 .foregroundColor(.white.opacity(0.8))
                 .multilineTextAlignment(.center)
 
-            Text(status)
-                .font(.footnote)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .accessibilityLabel("Game status")
-                .accessibilityValue(status)
         }
           .frame(maxWidth: .infinity)
           .padding(.bottom, 12)
@@ -143,7 +134,6 @@ struct GameView: View {
             }
         }
         .onDisappear {
-            gameScene?.onStatusChange = nil
             gameScene = nil
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -184,16 +174,9 @@ struct GameView: View {
 
     private func setupScene() {
         guard gameScene == nil else { return }
-        status = instructions
-        let side = UIScreen.main.bounds.width
+        let side = min(UIScreen.main.bounds.width - 32, 390)
         let scene = GameScene(appState: appState, size: CGSize(width: side, height: side))
         scene.scaleMode = .aspectFit
-        scene.onStatusChange = { message in
-            status = message
-            if message.hasPrefix("Wall") || message == "Goal reached!" {
-                UIAccessibility.post(notification: .announcement, argument: message)
-            }
-        }
         gameScene = scene
     }
 }
