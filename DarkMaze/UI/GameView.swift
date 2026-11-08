@@ -11,6 +11,7 @@ struct GameView: View {
     @EnvironmentObject private var appState: AppState
     @State private var gameScene: GameScene?
     @State private var status = "Find the ball, then choose a direction."
+    @State private var lastJoystickMove = Date.distantPast
 
     private var heading: String {
         if let stage = appState.tutorialStage {
@@ -60,9 +61,30 @@ struct GameView: View {
                 directionButton("Up", symbol: "arrow.up", dx: 0, dy: 1)
                 HStack(spacing: 16) {
                     directionButton("Left", symbol: "arrow.left", dx: -1, dy: 0)
+                    // Touch joystick; VoiceOver uses the surrounding buttons.
                     Circle()
-                        .fill(Color.white.opacity(0.15))
-                        .frame(width: 32, height: 32)
+                        .fill(Color.white.opacity(0.25))
+                        .overlay {
+                            Circle().strokeBorder(.white.opacity(0.8), lineWidth: 2)
+                        }
+                        .frame(width: 58, height: 58)
+                        .contentShape(Circle())
+                        .gesture(
+                            DragGesture(minimumDistance: 12)
+                                .onChanged { value in
+                                    let now = Date()
+                                    guard now.timeIntervalSince(lastJoystickMove) >= 0.2 else { return }
+                                    let x = value.translation.width
+                                    let y = value.translation.height
+                                    guard max(abs(x), abs(y)) >= 15 else { return }
+                                    lastJoystickMove = now
+                                    if abs(x) > abs(y) {
+                                        move(x > 0 ? 1 : -1, 0)
+                                    } else {
+                                        move(0, y < 0 ? 1 : -1)
+                                    }
+                                }
+                        )
                         .accessibilityHidden(true)
                     directionButton("Right", symbol: "arrow.right", dx: 1, dy: 0)
                 }
@@ -70,6 +92,11 @@ struct GameView: View {
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Movement joystick")
+
+            Text("Drag the joystick, move the ball directly, or use the direction buttons.")
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
 
             Text(status)
                 .font(.footnote)
