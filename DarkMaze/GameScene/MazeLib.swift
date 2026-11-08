@@ -161,6 +161,35 @@ enum MazeLibrary {
         ]
     ]
 
+    // Bottom-left is the starting tile. Tutorial goal is defined separately
+    // so the first exercise can be an actual straight corridor.
+    static func tutorialMaze(stage: Int) -> (tiles: [[UInt8]], goal: (row: Int, column: Int)) {
+        switch stage {
+        case 0:
+            return ([
+                [1, 0, 0, 0],
+                [1, 0, 0, 0],
+                [1, 0, 0, 0],
+                [1, 0, 0, 0]
+            ], (3, 0))
+        case 1:
+            return ([
+                [1, 0, 0, 0],
+                [1, 0, 0, 0],
+                [1, 0, 0, 0],
+                [1, 1, 1, 1]
+            ], (3, 3))
+        default:
+            return ([
+                [1, 0, 0, 0, 0],
+                [1, 1, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 1, 1],
+                [0, 0, 0, 0, 1]
+            ], (4, 4))
+        }
+    }
+
     static func randomMaze(level: AppState.GameLevel) -> [[UInt8]] {
         guard let level = levels[level], !level.isEmpty else { fatalError() }
         return level.randomElement()!
