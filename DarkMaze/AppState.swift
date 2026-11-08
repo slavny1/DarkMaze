@@ -11,6 +11,8 @@ final class AppState: ObservableObject {
     @Published var state: GameState = .main
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
+    // 0...2 is a guided, deterministic maze; nil is the regular game.
+    @Published var tutorialStage: Int?
 
     @Published var isOnboarding = true {
         didSet {
@@ -30,6 +32,20 @@ final class AppState: ObservableObject {
         }
     }
 
+    func startTutorial() {
+        tutorialStage = 0
+        gameID = UUID()
+        isOnboarding = false
+        state = .game
+    }
+
+    func startRegularGame(level: GameLevel) {
+        tutorialStage = nil
+        gameLevel = level
+        gameID = UUID()
+        state = .game
+    }
+
     init() {
         self.topLevel = .init(rawValue: UserDefaults.standard.integer(forKey: "topLevel")) ?? .zero
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
@@ -42,7 +58,7 @@ final class AppState: ObservableObject {
 
 extension AppState {
     enum GameState {
-        case main, game, win, level
+        case main, game, win, level, signals
     }
 }
 
