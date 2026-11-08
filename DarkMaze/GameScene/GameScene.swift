@@ -18,6 +18,14 @@ final class GameScene: SKScene {
 
     private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
+    private var mazeTiles: [[UInt8]] = []
+    private var tileWidth: CGFloat = 0
+    private var mazeOffset: CGFloat = 0
+    private var goal: (row: Int, column: Int) = (0, 0)
+    private var gameFinished = false
+
+    // Spoken status is exposed by a SwiftUI accessibility element.
+    var onStatusChange: ((String) -> Void)?
 
     private let sizeConst: CGFloat = UIScreen.main.bounds.width - 2 * Constants.borderLineWidth
 
@@ -69,13 +77,19 @@ final class GameScene: SKScene {
     // MARK: Maze creation
 
     private func createMaze() {
-        let mazeLevelOne = MazeLibrary.randomMaze(level: appState.gameLevel)
+        if let stage = appState.tutorialStage {
+            let tutorial = MazeLibrary.tutorialMaze(stage: stage)
+            mazeTiles = tutorial.tiles
+            goal = tutorial.goal
+        } else {
+            mazeTiles = MazeLibrary.randomMaze(level: appState.gameLevel)
+            goal = (mazeTiles.count - 1, mazeTiles.count - 1)
+        }
 
-        // Define size of a tile
-        let tileWidth = sizeConst / CGFloat(mazeLevelOne.count)
-
-        // Define an offset for the first tile in a maze
-        let mazeOffset = tileWidth / 2 - sizeConst / 2 + Constants.borderLineWidth
+        // Square cells and deterministic start/goal for the tutorial.
+        tileWidth = sizeConst / CGFloat(mazeTiles.count)
+        mazeOffset = tileWidth / 2 - sizeConst / 2 + Constants.borderLineWidth
+        let mazeLevelOne = mazeTiles
 
         // Set a position for the ball
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
@@ -103,7 +117,7 @@ final class GameScene: SKScene {
                 }
 
                 // For the last tile -- WIN
-                if (row == mazeLevelOne.count - 1) && (column == mazeLevelOne[row].count - 1) {
+                if row == goal.row && column == goal.column {
                     tile.type = .win
                     tile.physicsBody = SKPhysicsBody(rectangleOf: tile.frame.size)
                     tile.physicsBody?.isDynamic = true
@@ -128,6 +142,56 @@ final class GameScene: SKScene {
         ball.physicsBody?.collisionBitMask = PhysicsCategory.none
         ball.position = initialPosition!
         fatherTile.addChild(ball)
+    }
+
+    // MARK: Accessible directions / joystick
+
+    /// Move one cell from the current position. Used by visible joystick
+    /// buttons and VoiceOver custom actions; no dragging is required.
+    func moveBall(dx: Int, dy: Int) {
+        guard !gameFinished, let ball, tileWidth > 0,
+              abs(dx) + abs(dy) == 1 else { return }
+
+        let column = Int(round((ball.position.x - mazeOffset) / tileWidth))
+        let row = Int(round((ball.position.y - mazeOffset) / tileWidth))
+        let nextColumn = column + dx
+        let nextRow = row + dy
+
+        guard mazeTiles.indices.contains(nextRow),
+              mazeTiles[nextRow].indices.contains(nextColumn),
+              mazeTiles[nextRow][nextColumn] != 0 else {
+            HapticManager.collisionOccurred()
+            run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
+            onStatusChange?("Wall. Choose another direction.")
+            return
+        }
+
+        ball.position = CGPoint(
+            x: mazeOffset + CGFloat(nextColumn) * tileWidth,
+            y: mazeOffset + CGFloat(nextRow) * tileWidth
+        )
+        HapticManager.ballMoving()
+
+        if nextRow == goal.row && nextColumn == goal.column {
+            finishLevel()
+        } else {
+            onStatusChange?("Moved. Row \(nextRow + 1), column \(nextColumn + 1).")
+        }
+    }
+
+    private func finishLevel() {
+        guard !gameFinished else { return }
+        gameFinished = true
+        audioPlayer?.stopAudio()
+        HapticManager.ballWin()
+        run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
+        onStatusChange?("Goal reached!")
+        if appState.tutorialStage == nil,
+           appState.topLevel <= appState.gameLevel,
+           appState.topLevel < appState.gameLevel.lastLevel {
+            appState.topLevel = appState.gameLevel.nextLevel()
+        }
+        appState.state = .win
     }
 
     // MARK: Touches
@@ -217,14 +281,6 @@ final class GameScene: SKScene {
     }
 
     func ballCollideWithWin(ball: SKShapeNode, block: SKShapeNode) {
-        audioPlayer?.stopAudio()
-        HapticManager.ballWin()
-        run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
-//        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-        if (appState.topLevel <= appState.gameLevel) && appState.topLevel < appState.gameLevel.lastLevel {
-            appState.topLevel = appState.gameLevel.nextLevel()
-//            appState.topLevel = .one
-        }
-        appState.state = .win
+        finishLevel()
     }
 }
