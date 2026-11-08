@@ -18,6 +18,7 @@ struct WinView: View {
                 .font(.system(size: 124, weight: .black, design: .monospaced))
 
             Button {
+                appState.gameID = UUID()
                 appState.state = .game
             } label: {
                 Text("Play again")
@@ -28,21 +29,33 @@ struct WinView: View {
             }
 
             Button {
-
-                appState.state = .game
-                appState.gameLevel = appState.gameLevel.nextLevel()
-                
+                if let stage = appState.tutorialStage {
+                    if stage < 2 {
+                        appState.tutorialStage = stage + 1
+                        appState.gameID = UUID()
+                        appState.state = .game
+                    } else {
+                        appState.tutorialStage = nil
+                        appState.state = .main
+                    }
+                } else {
+                    appState.gameLevel = appState.gameLevel.nextLevel()
+                    appState.gameID = UUID()
+                    appState.state = .game
+                }
             } label: {
-                Text("Next level")
+                Text(appState.tutorialStage == nil ? "Next level" :
+                     (appState.tutorialStage == 2 ? "Finish tutorial" : "Next tutorial"))
                     .frame(width: 250, height: 50)
                     .background(Color.black)
-                    .foregroundColor(appState.gameLevel.isLastLevel ? .gray : .white)
+                    .foregroundColor(appState.tutorialStage == nil && appState.gameLevel.isLastLevel ? .gray : .white)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
-                    .border(appState.gameLevel.isLastLevel ? .gray : .white, width: 4)
+                    .border(appState.tutorialStage == nil && appState.gameLevel.isLastLevel ? .gray : .white, width: 4)
             }
-            .disabled(appState.gameLevel.isLastLevel)
+            .disabled(appState.tutorialStage == nil && appState.gameLevel.isLastLevel)
 
             Button {
+                appState.tutorialStage = nil
                 appState.state = .main
             } label: {
                 Text("Back to main")
