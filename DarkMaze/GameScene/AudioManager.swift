@@ -14,7 +14,7 @@ final class AudioManager {
     private var volume: Float = 0
 
     private func playAudio(named fileName: String) {
-        guard let url = Bundle.main.url(forResource: "ufo", withExtension: "mp3") else { return }
+        guard let url = Bundle.main.url(forResource: fileName, withExtension: "mp3") else { return }
 
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
@@ -28,7 +28,8 @@ final class AudioManager {
     }
 
     func updateVolume(volume: Float) {
-        audioPlayer.volume = volume
+        self.volume = min(max(volume, 0), 1)
+        audioPlayer.volume = self.volume
     }
 
     func stopAudio() {
