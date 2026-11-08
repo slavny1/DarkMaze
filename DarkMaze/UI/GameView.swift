@@ -90,14 +90,14 @@ struct GameView: View {
                                 .onChanged { value in
                                     let now = Date()
                                     guard now.timeIntervalSince(lastJoystickMove) >= 0.2 else { return }
-                                    let x = value.translation.width
-                                    let y = value.translation.height
-                                    guard max(abs(x), abs(y)) >= 15 else { return }
+                                    let horizontalOffset = value.translation.width
+                                    let verticalOffset = value.translation.height
+                                    guard max(abs(horizontalOffset), abs(verticalOffset)) >= 15 else { return }
                                     lastJoystickMove = now
-                                    if abs(x) > abs(y) {
-                                        move(x > 0 ? 1 : -1, 0)
+                                    if abs(horizontalOffset) > abs(verticalOffset) {
+                                        move(horizontalOffset > 0 ? 1 : -1, 0)
                                     } else {
-                                        move(0, y < 0 ? 1 : -1)
+                                        move(0, verticalOffset < 0 ? 1 : -1)
                                     }
                                 }
                         )
