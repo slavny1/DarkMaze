@@ -49,7 +49,13 @@ final class AppState: ObservableObject {
     init() {
         self.topLevel = .init(rawValue: UserDefaults.standard.integer(forKey: "topLevel")) ?? .zero
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
-        self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+        // Show accessible introduction on a truly fresh install.
+        // Preserve the choice of returning players.
+        if UserDefaults.standard.object(forKey: "isOnboarding") == nil {
+            self.isOnboarding = true
+        } else {
+            self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+        }
 
     }
 }
