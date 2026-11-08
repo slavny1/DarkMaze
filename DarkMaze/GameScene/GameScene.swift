@@ -27,7 +27,9 @@ final class GameScene: SKScene {
     // Spoken status is exposed by a SwiftUI accessibility element.
     var onStatusChange: ((String) -> Void)?
 
-    private let sizeConst: CGFloat = UIScreen.main.bounds.width - 2 * Constants.borderLineWidth
+    private var sizeConst: CGFloat {
+        min(size.width, size.height) - 2 * Constants.borderLineWidth
+    }
 
     private var closestDistance: CGFloat = CGFloat.infinity //
     private var distanceToNode: CGFloat? // standart distance from ball to node
@@ -56,6 +58,7 @@ final class GameScene: SKScene {
     }
 
     override func didMove(to view: SKView) {
+        guard fatherTile == nil else { return }
         createFather()
         createMaze()
         createBall()
@@ -262,6 +265,8 @@ final class GameScene: SKScene {
     // MARK: Collisions
 
     func ballCollideWithBlock(ball: SKShapeNode, block: SKShapeNode) {
+        guard !gameFinished else { return }
+        onStatusChange?("Wall. Choose another direction.")
         print("Collision detected")
         ball.removeFromParent()
         block.fillColor = .red
