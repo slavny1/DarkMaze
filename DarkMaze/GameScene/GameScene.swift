@@ -24,9 +24,6 @@ final class GameScene: SKScene {
     private var goal: (row: Int, column: Int) = (0, 0)
     private var gameFinished = false
 
-    // Spoken status is exposed by a SwiftUI accessibility element.
-    var onStatusChange: ((String) -> Void)?
-
     private var sizeConst: CGFloat {
         min(size.width, size.height) - 2 * Constants.borderLineWidth
     }
@@ -165,7 +162,6 @@ final class GameScene: SKScene {
               mazeTiles[nextRow][nextColumn] != 0 else {
             HapticManager.collisionOccurred()
             run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
-            onStatusChange?("Wall. Choose another direction.")
             return
         }
 
@@ -178,8 +174,6 @@ final class GameScene: SKScene {
 
         if nextRow == goal.row && nextColumn == goal.column {
             finishLevel()
-        } else {
-            onStatusChange?("Moved. Row \(nextRow + 1), column \(nextColumn + 1).")
         }
     }
 
@@ -189,7 +183,6 @@ final class GameScene: SKScene {
         audioPlayer?.stopAudio()
         HapticManager.ballWin()
         run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
-        onStatusChange?("Goal reached!")
         if appState.tutorialStage == nil,
            appState.topLevel <= appState.gameLevel,
            appState.topLevel < appState.gameLevel.lastLevel {
@@ -266,7 +259,6 @@ final class GameScene: SKScene {
 
     func ballCollideWithBlock(ball: SKShapeNode, block: SKShapeNode) {
         guard !gameFinished else { return }
-        onStatusChange?("Wall. Choose another direction.")
         print("Collision detected")
         ball.removeFromParent()
         block.fillColor = .red
