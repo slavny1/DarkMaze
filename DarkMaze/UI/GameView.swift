@@ -145,6 +145,16 @@ struct GameView: View {
 
     private func setupScene() {
         guard gameScene == nil else { return }
+        if let stage = appState.tutorialStage {
+            switch stage {
+            case 0:
+                status = "Straight corridor. Move up three times to find the goal."
+            case 1:
+                status = "First turn. Move up three times, then right three times."
+            default:
+                status = "Follow the path. Avoid the walls and listen for the goal."
+            }
+        }
         let side = UIScreen.main.bounds.width
         let scene = GameScene(appState: appState, size: CGSize(width: side, height: side))
         scene.scaleMode = .aspectFit
