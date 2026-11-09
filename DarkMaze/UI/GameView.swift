@@ -6,6 +6,7 @@
 import SwiftUI
 import SpriteKit
 import UIKit
+import Combine
 
 struct GameView: View {
     @EnvironmentObject private var appState: AppState
@@ -102,11 +103,9 @@ struct GameView: View {
             guard !joystickRequiresRelease else { return }
             let horizontal = joystickOffset.width / joystickRadius
             let vertical = -joystickOffset.height / joystickRadius
-            if abs(horizontal) + abs(vertical) > 0.03 {
-                gameScene?.steer(horizontal: horizontal,
-                                 vertical: vertical,
-                                 deltaTime: frameDuration)
-            }
+            gameScene?.steer(horizontal: horizontal,
+                             vertical: vertical,
+                             deltaTime: frameDuration)
         }
         .onAppear {
             setupScene()
@@ -148,7 +147,7 @@ struct GameView: View {
         }
         .frame(width: 160, height: 160)
         .contentShape(Circle())
-        .gesture(
+        .highPriorityGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     guard !joystickRequiresRelease else { return }
