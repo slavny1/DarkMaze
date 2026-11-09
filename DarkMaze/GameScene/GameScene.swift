@@ -174,10 +174,12 @@ final class GameScene: SKScene {
     func nudgeBall(dx: Int, dy: Int) {
         guard abs(dx) + abs(dy) == 1 else { return }
         joystickNeedsRelease = false
-        beginMovementSound()
         moveBall(by: CGVector(dx: CGFloat(dx) * tileWidth * 0.08,
                               dy: CGFloat(dy) * tileWidth * 0.08))
-        stopMovementSound()
+        if !joystickNeedsRelease && !gameFinished {
+            HapticManager.ballMoving()
+            audioPlayer?.playStepCue(volume: proximityVolume())
+        }
     }
 
     /// The joystick calls this from its display timer.
@@ -258,11 +260,9 @@ final class GameScene: SKScene {
     private func updateWallSound() {
         guard isMovementSoundPlaying, ball != nil else { return }
         let proximity = closestBlackTile(to: ball)
-        // Wall/edge gets progressively louder during approach.
         let listeningDistance = tileWidth * 1.2
         let closeness = max(0, min(1, (listeningDistance - proximity) / listeningDistance))
-        let loudness = Float(0.015 + closeness * closeness * 0.65)
-        audioPlayer?.updateVolume(volume: loudness)
+        audioPlayer?.updateVolume(volume: proximityVolume())
 
         // Near-wall taps become faster as the ball approaches a surface.
         // They complement the rising audio without exposing directions.
@@ -274,6 +274,15 @@ final class GameScene: SKScene {
                 lastWallHaptic = now
             }
         }
+    }
+
+    private func proximityVolume() -> Float {
+        guard ball != nil else { return 0.015 }
+        let listeningDistance = tileWidth * 1.2
+        guard listeningDistance > 0 else { return 0.015 }
+        let proximity = closestBlackTile(to: ball)
+        let closeness = max(0, min(1, (listeningDistance - proximity) / listeningDistance))
+        return Float(0.015 + closeness * closeness * 0.65)
     }
 
     private func stopMovementSound() {
