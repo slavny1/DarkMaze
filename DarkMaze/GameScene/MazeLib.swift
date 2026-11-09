@@ -12,7 +12,10 @@ enum MazeLibrary {
         .zero: mazesLevelZero,
         .one: mazesLevelOne,
         .two: mazesLevelTwo,
-        .three: mazesLevelThree
+        .three: mazesLevelThree,
+        .four: mazesLevelFour,
+        .five: mazesLevelFive,
+        .six: mazesLevelSix
     ]
 
     private static let mazesLevelZero: [[[UInt8]]] = [
@@ -158,6 +161,51 @@ enum MazeLibrary {
             [1, 1, 0, 1, 0, 1, 1],
             [1, 0, 1, 1, 0, 1, 0],
             [1, 1, 1, 0, 1, 1, 1]
+        ]
+    ]
+
+    // Level four: 8x8 winding corridor.
+    private static let mazesLevelFour: [[[UInt8]]] = [
+        [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0]
+        ]
+    ]
+
+    // Level five: 9x9 winding corridor.
+    private static let mazesLevelFive: [[[UInt8]]] = [
+        [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ]
+    ]
+
+    // Level six: 10x10 winding corridor.
+    private static let mazesLevelSix: [[[UInt8]]] = [
+        [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
         ]
     ]
 
