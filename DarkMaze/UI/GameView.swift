@@ -13,6 +13,7 @@ struct GameView: View {
     @State private var gameScene: GameScene?
     @State private var joystickOffset: CGSize = .zero
     @State private var joystickRequiresRelease = false
+    @State private var joystickTouched = false
     @AccessibilityFocusState private var isBallFocused: Bool
 
     private let joystickRadius: CGFloat = 50
@@ -144,7 +145,8 @@ struct GameView: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     guard !joystickRequiresRelease else { return }
-                    if joystickOffset == .zero {
+                    if !joystickTouched {
+                        joystickTouched = true
                         HapticManager.joystickLocated()
                     }
                     let horizontal = value.translation.width
@@ -154,6 +156,7 @@ struct GameView: View {
                     joystickOffset = CGSize(width: horizontal * scale, height: vertical * scale)
                 }
                 .onEnded { _ in
+                    joystickTouched = false
                     joystickOffset = .zero
                     joystickRequiresRelease = false
                     gameScene?.releaseJoystick()
