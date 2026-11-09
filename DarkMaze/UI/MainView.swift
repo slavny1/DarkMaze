@@ -23,10 +23,10 @@ struct MainView: View {
             .accessibilityLabel("Dark Maze")
             .accessibilityAddTraits(.isHeader)
 
-            Text("Top level: \(appState.topLevel.rawValue)")
+            Text("Top level: \(appState.topLevel.rawValue + 1)")
                 .font(.system(size: 18, weight: .black, design: .monospaced))
                 .foregroundColor(.white)
-                .accessibilityLabel("Top level \(appState.topLevel.rawValue)")
+                .accessibilityLabel("Top level \(appState.topLevel.rawValue + 1)")
 
             menuButton("Start game", primary: true) {
                 appState.startRegularGame(level: appState.topLevel)
