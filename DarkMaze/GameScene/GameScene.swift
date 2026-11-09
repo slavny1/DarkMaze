@@ -130,6 +130,7 @@ final class GameScene: SKScene {
         ball = SKShapeNode(circleOfRadius: radius)
         ball.fillColor = .white
         ball.strokeColor = .white
+        ball.alpha = appState.hideBall ? 0 : 1
         ball.position = initialPosition ?? .zero
         fatherTile.addChild(ball)
         updateWallSound()
@@ -138,6 +139,7 @@ final class GameScene: SKScene {
     private var ballRadius: CGFloat { tileWidth * 0.12 }
     private var touchIsDragging = false
     private var joystickNeedsRelease = false
+    private var ballFoundDuringTouch = false
 
     /// Informs the SwiftUI joystick to return to neutral after a collision.
     var onCollision: (() -> Void)?
@@ -187,7 +189,9 @@ final class GameScene: SKScene {
         guard !joystickNeedsRelease, !gameFinished else { return }
         let magnitude = hypot(horizontal, vertical)
         guard magnitude > 0.04 else {
-            stopMovementSound()
+            // Maintain the sound level while the stick is held still,
+            // allowing the player to listen to the nearest wall.
+            if isMovementSoundPlaying { updateWallSound() }
             return
         }
         beginMovementSound()
@@ -259,15 +263,13 @@ final class GameScene: SKScene {
 
     private func updateWallSound() {
         guard isMovementSoundPlaying, ball != nil else { return }
-        let proximity = closestBlackTile(to: ball)
-        let listeningDistance = tileWidth * 1.2
-        let closeness = max(0, min(1, (listeningDistance - proximity) / listeningDistance))
+        let closeness = wallCloseness()
         audioPlayer?.updateVolume(volume: proximityVolume())
 
         // Near-wall taps become faster as the ball approaches a surface.
         // They complement the rising audio without exposing directions.
-        if closeness > 0.3 {
-            let interval = 0.55 - Double(closeness) * 0.38
+        if closeness >= 0.82 {
+            let interval = 0.5 - Double(closeness) * 0.3
             let now = Date()
             if now.timeIntervalSince(lastWallHaptic) >= interval {
                 HapticManager.ballMoving()
@@ -276,13 +278,18 @@ final class GameScene: SKScene {
         }
     }
 
+    private func wallCloseness() -> CGFloat {
+        guard ball != nil, tileWidth > 0 else { return 0 }
+        // Subtract ball radius: measure the gap between its edge and a wall.
+        // Corridor centre (~0.38 tile clearance) is intentionally silent.
+        let clearance = max(0, closestBlackTile(to: ball) - ballRadius)
+        let soundRange = tileWidth * 0.36
+        return max(0, min(1, (soundRange - clearance) / soundRange))
+    }
+
     private func proximityVolume() -> Float {
-        guard ball != nil else { return 0.015 }
-        let listeningDistance = tileWidth * 1.2
-        guard listeningDistance > 0 else { return 0.015 }
-        let proximity = closestBlackTile(to: ball)
-        let closeness = max(0, min(1, (listeningDistance - proximity) / listeningDistance))
-        return Float(0.015 + closeness * closeness * 0.65)
+        let closeness = wallCloseness()
+        return Float(0.005 + closeness * closeness * 0.7)
     }
 
     private func stopMovementSound() {
@@ -308,22 +315,37 @@ final class GameScene: SKScene {
 
     // MARK: Direct touch dragging
 
+    private func trySelectBall(at point: CGPoint) {
+        guard !touchIsDragging, !ballFoundDuringTouch,
+              hypot(point.x - ball.position.x, point.y - ball.position.y) <= ballRadius * 2.5 else {
+            return
+        }
+        ballFoundDuringTouch = true
+        lastTouchLocation = point
+        touchIsDragging = true
+        joystickNeedsRelease = false
+        HapticManager.ballTouched()
+        run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
+        beginMovementSound()
+    }
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard !gameFinished, let touch = touches.first else { return }
         let point = touch.location(in: fatherTile)
-        if hypot(point.x - ball.position.x, point.y - ball.position.y) <= ballRadius * 2.5 {
-            lastTouchLocation = point
-            touchIsDragging = true
-            joystickNeedsRelease = false
-            HapticManager.ballTouched()
-            beginMovementSound()
-        }
+        ballFoundDuringTouch = false
+        trySelectBall(at: point)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard touchIsDragging, let touch = touches.first,
-              let previous = lastTouchLocation else { return }
+        guard let touch = touches.first else { return }
         let position = touch.location(in: fatherTile)
+        if !touchIsDragging {
+            // Finger-sweep exploration: announce discovery only when the
+            // finger reaches the ball, without revealing its coordinates.
+            trySelectBall(at: position)
+            return
+        }
+        guard let previous = lastTouchLocation else { return }
         lastTouchLocation = position
         moveBall(by: CGVector(dx: position.x - previous.x,
                               dy: position.y - previous.y))
@@ -332,6 +354,7 @@ final class GameScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         touchIsDragging = false
         lastTouchLocation = nil
+        ballFoundDuringTouch = false
         joystickNeedsRelease = false
         stopMovementSound()
     }
