@@ -105,7 +105,8 @@ struct GameView: View {
                                 key: JoystickDiscoveryFrameKey.self,
                                 value: proxy.frame(in: .named("discoverySpace"))
                             )
-                        )
+                        }
+                    )
 
                 Button("Repeat instructions") {
                     UIAccessibility.post(notification: .announcement, argument: instructions)
