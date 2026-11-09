@@ -173,11 +173,11 @@ final class GameScene: SKScene {
     }
 
     /// VoiceOver action makes a *short* nudge, never jumps a full cell.
-    func nudgeBall(dx: Int, dy: Int) {
-        guard abs(dx) + abs(dy) == 1 else { return }
+    func nudgeBall(horizontal: Int, vertical: Int) {
+        guard abs(horizontal) + abs(vertical) == 1 else { return }
         joystickNeedsRelease = false
-        moveBall(by: CGVector(dx: CGFloat(dx) * tileWidth * 0.08,
-                              dy: CGFloat(dy) * tileWidth * 0.08))
+        moveBall(by: CGVector(dx: CGFloat(horizontal) * tileWidth * 0.08,
+                              dy: CGFloat(vertical) * tileWidth * 0.08))
         if !joystickNeedsRelease && !gameFinished {
             HapticManager.ballMoving()
             audioPlayer?.playStepCue(volume: proximityVolume())
