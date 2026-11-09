@@ -326,7 +326,9 @@ final class GameScene: SKScene {
     // MARK: Direct touch dragging
 
     private func trySelectBall(at point: CGPoint) {
-        let selectionRadius = max(ballRadius * 2.5, 22)
+        // Match the screen-wide discovery target, so a found ball can
+        // always be grabbed without pixel-perfect positioning.
+        let selectionRadius = max(ballRadius * 2.5, 30)
         guard !touchIsDragging, !ballFoundDuringTouch,
               hypot(point.x - ball.position.x, point.y - ball.position.y) <= selectionRadius else {
             return
