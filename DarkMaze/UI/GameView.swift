@@ -57,39 +57,28 @@ struct GameView: View {
                     SpriteView(scene: gameScene, transition: nil)
                         .frame(width: mazeSide, height: mazeSide)
                         .clipped()
-                        .accessibilityHidden(true)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Maze, touch to find the ball")
+                        .accessibilityHint(
+                            "Explore by touch. Select the ball to drag it. " +
+                            "VoiceOver actions allow small nudges."
+                        )
+                        .accessibilityAddTraits(.allowsDirectInteraction)
+                        .accessibilityFocused($isBallFocused)
+                        .accessibilityAction(named: Text("Nudge up")) {
+                            gameScene.nudgeBall(dx: 0, dy: 1)
+                        }
+                        .accessibilityAction(named: Text("Nudge down")) {
+                            gameScene.nudgeBall(dx: 0, dy: -1)
+                        }
+                        .accessibilityAction(named: Text("Nudge left")) {
+                            gameScene.nudgeBall(dx: -1, dy: 0)
+                        }
+                        .accessibilityAction(named: Text("Nudge right")) {
+                            gameScene.nudgeBall(dx: 1, dy: 0)
+                        }
                 }
 
-                // A navigable VoiceOver representation of the real SpriteKit ball.
-                // Each custom action nudges it a small fraction of a tile.
-                Button {
-                    HapticManager.ballTouched()
-                    UIAccessibility.post(
-                        notification: .announcement,
-                        argument: "Ball selected. Choose a direction with VoiceOver actions."
-                    )
-                } label: {
-                    Label("Ball", systemImage: "circle.fill")
-                        .foregroundColor(.white)
-                        .font(.callout.weight(.semibold))
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 5)
-                }
-                .accessibilityLabel("Player ball")
-                .accessibilityHint("Use the VoiceOver actions to nudge the ball gently.")
-                .accessibilityFocused($isBallFocused)
-                .accessibilityAction(named: Text("Nudge up")) {
-                    gameScene?.nudgeBall(dx: 0, dy: 1)
-                }
-                .accessibilityAction(named: Text("Nudge down")) {
-                    gameScene?.nudgeBall(dx: 0, dy: -1)
-                }
-                .accessibilityAction(named: Text("Nudge left")) {
-                    gameScene?.nudgeBall(dx: -1, dy: 0)
-                }
-                .accessibilityAction(named: Text("Nudge right")) {
-                    gameScene?.nudgeBall(dx: 1, dy: 0)
-                }
 
                 joystick
                     .padding(.vertical, 4)
@@ -155,6 +144,9 @@ struct GameView: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     guard !joystickRequiresRelease else { return }
+                    if joystickOffset == .zero {
+                        HapticManager.joystickLocated()
+                    }
                     let horizontal = value.translation.width
                     let vertical = value.translation.height
                     let distance = hypot(horizontal, vertical)
@@ -167,7 +159,10 @@ struct GameView: View {
                     gameScene?.releaseJoystick()
                 }
         )
-        .accessibilityHidden(true)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Joystick, bottom centre")
+        .accessibilityHint("Touch and hold, then drag gently to steer the ball")
+        .accessibilityAddTraits(.allowsDirectInteraction)
     }
 
     private func setupScene(side: CGFloat) {
