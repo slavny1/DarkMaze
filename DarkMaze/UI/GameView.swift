@@ -26,7 +26,7 @@ struct GameView: View {
         if let stage = appState.tutorialStage {
             return "Tutorial \(stage + 1) of 3"
         }
-        return "Level \(appState.gameLevel.rawValue)"
+        return "Level \(appState.gameLevel.rawValue + 1)"
     }
 
     private var instructions: String {
