@@ -56,6 +56,16 @@ struct MainView: View {
             .frame(width: 250, height: 48)
             .accessibilityLabel("Blind mode")
             .accessibilityHint("Hides visible maze corridors but keeps audio and vibration")
+
+            Toggle(isOn: $appState.hideBall) {
+                Text(appState.hideBall ? "Hide ball: on" : "Hide ball: off")
+                    .foregroundColor(.white)
+                    .font(.system(size: 18, weight: .black, design: .monospaced))
+            }
+            .toggleStyle(BlindModeToggleStyle())
+            .frame(width: 250, height: 48)
+            .accessibilityLabel("Hide ball")
+            .accessibilityHint("Locate the invisible ball by sweeping a finger across the maze")
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 16)
@@ -81,64 +91,83 @@ struct MainView: View {
     }
 }
 
-// The same sounds and haptics used during play can be rehearsed here.
+// Sound rehearsal with the same square and monochrome visual language.
 struct SignalTrainingView: View {
     @EnvironmentObject private var appState: AppState
     @State private var player: AVAudioPlayer?
 
     var body: some View {
-        VStack(spacing: 18) {
-            Text("Learn the signals")
-                .font(.title.bold())
+        VStack(spacing: 14) {
+            Text("SOUNDS")
+                .font(.system(size: 36, weight: .black, design: .monospaced))
                 .foregroundColor(.white)
                 .accessibilityAddTraits(.isHeader)
 
-            Text("Activate each signal to hear and feel it. Use headphones for the clearest sound.")
+            Text("Play each signal to learn its meaning.")
+                .font(.system(size: 16, weight: .medium, design: .monospaced))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.white)
 
-            signalButton("Find the ball", file: "bonus", hint: "Ball selected") {
+            signalButton("Find ball", file: "bonus",
+                         hint: "The ball was found by touch") {
                 HapticManager.ballTouched()
             }
-            signalButton("Near a wall", file: "ufo", hint: "Movement sound; louder near walls") {
+            signalButton("Near wall", file: "ufo",
+                         hint: "This sound grows louder as a wall gets closer") {
                 HapticManager.ballMoving()
             }
-            signalButton("Hit a wall", file: "wall", hint: "Collision, choose another direction") {
+            signalButton("Collision", file: "wall",
+                         hint: "Hitting a wall returns the ball to the start") {
                 HapticManager.collisionOccurred()
             }
-            signalButton("Outside the maze", file: "edge", hint: "Boundary signal") {
+            signalButton("Boundary", file: "edge",
+                         hint: "The edge of the maze") {
                 HapticManager.collisionOccurred()
             }
-            signalButton("Reach the goal", file: "win", hint: "Success!") {
+            signalButton("Goal", file: "win",
+                         hint: "Successfully reaching the end of a maze") {
                 HapticManager.ballWin()
             }
 
-            Button("Start first tutorial level") {
+            squareButton("Start tutorial", filled: true) {
                 stopSound()
                 appState.startTutorial()
             }
-            .padding(12)
-
-            Button("Back to main") {
+            squareButton("Main menu") {
                 stopSound()
                 appState.state = .main
             }
         }
-        .foregroundColor(.white)
-        .padding(24)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 16)
         .onDisappear(perform: stopSound)
     }
 
-    private func signalButton(_ label: String, file: String,
-                              hint: String, haptic: @escaping () -> Void) -> some View {
-        Button {
+    private func squareButton(
+        _ title: String,
+        filled: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 18, weight: .black, design: .monospaced))
+                .foregroundColor(filled ? .black : .white)
+                .frame(width: 250, height: 48)
+                .background(filled ? Color.white : Color.black)
+                .overlay(Rectangle().stroke(.white, lineWidth: filled ? 0 : 3))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func signalButton(
+        _ title: String,
+        file: String,
+        hint: String,
+        haptic: @escaping () -> Void
+    ) -> some View {
+        squareButton(title) {
             playSound(named: file)
             haptic()
-        } label: {
-            Label(label, systemImage: "speaker.wave.2")
-                .frame(maxWidth: .infinity)
-                .padding(10)
-                .background(Color.gray.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
         }
         .accessibilityHint(hint)
     }
