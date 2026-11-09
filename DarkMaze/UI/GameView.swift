@@ -103,8 +103,15 @@ struct GameView: View {
         }
         .onReceive(movementTimer) { _ in
             guard !joystickRequiresRelease else { return }
-            let horizontal = joystickOffset.width / joystickRadius
-            let vertical = -joystickOffset.height / joystickRadius
+            let displacement = hypot(joystickOffset.width, joystickOffset.height)
+            let activeRange = joystickRadius - neutralRadius
+            let normalized = max(0, (displacement - neutralRadius) / activeRange)
+            // Fine control close to centre; full speed only at the rim.
+            let speedFactor = pow(normalized, 1.5)
+            let horizontal = displacement > 0 ?
+                joystickOffset.width / displacement * speedFactor : 0
+            let vertical = displacement > 0 ?
+                -joystickOffset.height / displacement * speedFactor : 0
             gameScene?.steer(horizontal: horizontal,
                              vertical: vertical,
                              deltaTime: frameDuration)
