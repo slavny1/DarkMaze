@@ -29,6 +29,12 @@ final class HapticManager {
         feedbackGenerator.notificationOccurred(.success)
     }
 
+    static func joystickLocated() {
+        // Distinct from the warning used for discovering the ball.
+        let feedback = UIImpactFeedbackGenerator(style: .light)
+        feedback.impactOccurred()
+    }
+
     static func buttonTapped() {
         let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
         feedbackGenerator.impactOccurred()
