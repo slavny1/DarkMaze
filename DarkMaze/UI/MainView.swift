@@ -10,55 +10,74 @@ struct MainView: View {
     @EnvironmentObject private var appState: AppState
 
     var body: some View {
-        VStack(spacing: 18) {
-            Text("DARK MAZE")
-                .font(.system(size: 42, weight: .black, design: .monospaced))
-                .foregroundColor(.white)
-                .accessibilityAddTraits(.isHeader)
-
-            Text("Explore a maze with sound and touch.")
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-
-            Button("Start tutorial") {
-                HapticManager.buttonTapped()
-                appState.startTutorial()
+        VStack(spacing: 16) {
+            VStack(spacing: -32) {
+                Text("DARK")
+                Text("MAZE")
             }
-            .accessibilityHint("Begin with a straight corridor and learn to move the ball")
+            .font(.system(size: 104, weight: .black, design: .monospaced))
+            .foregroundColor(.white)
+            .minimumScaleFactor(0.6)
+            .lineLimit(1)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Dark Maze")
+            .accessibilityAddTraits(.isHeader)
 
-            Button("Learn sounds and vibrations") {
-                HapticManager.buttonTapped()
-                appState.state = .signals
-            }
-            .accessibilityHint("Listen to and feel the game's signals")
+            Text("Top level: \(appState.topLevel.rawValue)")
+                .font(.system(size: 18, weight: .black, design: .monospaced))
+                .foregroundColor(.white)
+                .accessibilityLabel("Top level \(appState.topLevel.rawValue)")
 
-            Button("Continue game") {
-                HapticManager.buttonTapped()
+            menuButton("Start game", primary: true) {
                 appState.startRegularGame(level: appState.topLevel)
             }
+            .accessibilityHint("Continue your unlocked game levels")
 
-            Button("Levels") {
-                HapticManager.buttonTapped()
+            menuButton("Levels") {
                 appState.state = .level
             }
 
-            Toggle("Hide the maze visually", isOn: $appState.blindMode)
-                .accessibilityHint("Visual appearance only. Sounds and accessible controls work in either mode.")
-        }
-        .buttonStyle(AccessibleMenuButtonStyle())
-        .padding(25)
-    }
-}
+            menuButton("Tutorial") {
+                appState.startTutorial()
+            }
+            .accessibilityHint("Play three short beginner mazes")
 
-private struct AccessibleMenuButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 18, weight: .semibold))
-            .foregroundColor(.black)
-            .frame(maxWidth: .infinity)
-            .padding(13)
-            .background(Color.white.opacity(configuration.isPressed ? 0.7 : 1),
-                        in: RoundedRectangle(cornerRadius: 12))
+            menuButton("Sounds and haptics") {
+                appState.state = .signals
+            }
+            .accessibilityHint("Practice game sounds and vibrations before playing")
+
+            Toggle(isOn: $appState.blindMode) {
+                Text(appState.blindMode ? "Blind mode on" : "Blind mode off")
+                    .foregroundColor(.white)
+                    .font(.system(size: 18, weight: .black, design: .monospaced))
+            }
+            .toggleStyle(BlindModeToggleStyle())
+            .frame(width: 250, height: 48)
+            .accessibilityLabel("Blind mode")
+            .accessibilityHint("Hides visible maze corridors but keeps audio and vibration")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 16)
+    }
+
+    private func menuButton(
+        _ title: String,
+        primary: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            HapticManager.buttonTapped()
+            action()
+        } label: {
+            Text(title)
+                .font(.system(size: 21, weight: .black, design: .monospaced))
+                .foregroundColor(primary ? .black : .white)
+                .frame(width: 250, height: 50)
+                .background(primary ? Color.white : Color.black)
+                .overlay(Rectangle().stroke(.white, lineWidth: primary ? 0 : 3))
+        }
+        .buttonStyle(.plain)
     }
 }
 
