@@ -42,7 +42,9 @@ struct GameView: View {
         case 2:
             return "Find your way through the winding maze using only sound and touch."
         default:
-            return "Drag the ball directly or hold the joystick gently. Wall sounds grow louder as you approach. Touching a wall sends the ball back to the start."
+            return "Drag the ball or hold the joystick gently. " +
+                "Wall sounds grow louder as you approach. " +
+                "Touching a wall returns the ball to the start."
         }
     }
 
