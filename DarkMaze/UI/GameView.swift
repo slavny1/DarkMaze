@@ -14,9 +14,11 @@ struct GameView: View {
     @State private var joystickOffset: CGSize = .zero
     @State private var joystickRequiresRelease = false
     @State private var joystickTouched = false
+    @State private var isJoystickCentered = true
     @AccessibilityFocusState private var isBallFocused: Bool
 
     private let joystickRadius: CGFloat = 50
+    private let neutralRadius: CGFloat = 11
     private let frameDuration: CGFloat = 1.0 / 60.0
     private let movementTimer = Timer.publish(every: 1.0 / 60.0, on: .main, in: .common).autoconnect()
 
@@ -152,11 +154,27 @@ struct GameView: View {
                     let horizontal = value.translation.width
                     let vertical = value.translation.height
                     let distance = hypot(horizontal, vertical)
-                    let scale = distance > joystickRadius ? joystickRadius / distance : 1
-                    joystickOffset = CGSize(width: horizontal * scale, height: vertical * scale)
+                    // The neutral zone is a physical-feeling detent.
+                    // Snap the knob precisely to the centre and pulse only
+                    // once when returning there from active movement.
+                    if distance <= neutralRadius {
+                        joystickOffset = .zero
+                        if !isJoystickCentered {
+                            isJoystickCentered = true
+                            HapticManager.joystickCentered()
+                        }
+                    } else {
+                        isJoystickCentered = false
+                        let scale = distance > joystickRadius ? joystickRadius / distance : 1
+                        joystickOffset = CGSize(width: horizontal * scale, height: vertical * scale)
+                    }
                 }
                 .onEnded { _ in
                     joystickTouched = false
+                    if !isJoystickCentered {
+                        HapticManager.joystickCentered()
+                    }
+                    isJoystickCentered = true
                     joystickOffset = .zero
                     joystickRequiresRelease = false
                     gameScene?.releaseJoystick()
@@ -174,6 +192,7 @@ struct GameView: View {
         scene.scaleMode = .aspectFit
         scene.onCollision = {
             joystickOffset = .zero
+            isJoystickCentered = true
             joystickRequiresRelease = true
         }
         gameScene = scene
