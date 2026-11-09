@@ -41,16 +41,16 @@ final class AudioManager {
         playAudio(named: "ufo")
     }
 
-    func playStepCue() {
-        // A brief instance of the existing movement tone. Repeated taps
-        // should not create multiple looping players.
+    func playStepCue(volume: Float) {
+        // For VoiceOver nudges, play a non-looping tone whose loudness reflects
+        // the actual distance to walls (rather than narrating the maze).
         stopAudio()
-        self.volume = 0.35
+        self.volume = min(max(volume, 0), 1)
         guard let url = Bundle.main.url(forResource: "ufo", withExtension: "mp3"),
               let player = try? AVAudioPlayer(contentsOf: url) else { return }
         audioPlayer = player
         audioPlayer.numberOfLoops = 0
-        audioPlayer.volume = volume
+        audioPlayer.volume = self.volume
         audioPlayer.play()
     }
 }
