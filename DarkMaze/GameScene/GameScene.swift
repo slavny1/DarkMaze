@@ -136,6 +136,15 @@ final class GameScene: SKScene {
         updateWallSound()
     }
 
+    // Position in UIKit/SwiftUI coordinates, with the origin at top left.
+    var ballPositionInView: CGPoint? {
+        guard ball != nil else { return nil }
+        return CGPoint(
+            x: size.width / 2 + ball.position.x,
+            y: size.height / 2 - ball.position.y
+        )
+    }
+
     private var ballRadius: CGFloat { tileWidth * 0.12 }
     private var touchIsDragging = false
     private var joystickNeedsRelease = false
@@ -326,8 +335,8 @@ final class GameScene: SKScene {
         lastTouchLocation = point
         touchIsDragging = true
         joystickNeedsRelease = false
-        HapticManager.ballTouched()
-        run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
+        // The screen-wide discovery gesture owns the confirmation cue.
+        // Avoid playing two overlapping "ball found" sounds.
         beginMovementSound()
     }
 
