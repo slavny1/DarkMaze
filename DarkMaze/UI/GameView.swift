@@ -40,7 +40,13 @@ struct GameView: View {
     }
 
     var body: some View {
-        ScrollView {
+        // The playfield must not scroll when the joystick is dragged.
+        GeometryReader { geometry in
+            let mazeSide = max(
+                180,
+                min(geometry.size.width - 32, geometry.size.height - 310, 390)
+            )
+
             VStack(spacing: 12) {
                 Text(heading)
                     .font(.headline)
@@ -49,10 +55,8 @@ struct GameView: View {
 
                 if let gameScene {
                     SpriteView(scene: gameScene, transition: nil)
-                        .frame(
-                            width: min(UIScreen.main.bounds.width - 32, 390),
-                            height: min(UIScreen.main.bounds.width - 32, 390)
-                        )
+                        .frame(width: mazeSide, height: mazeSide)
+                        .clipped()
                         .accessibilityHidden(true)
                 }
 
@@ -96,8 +100,14 @@ struct GameView: View {
                 .foregroundColor(.white)
                 .accessibilityHint("Explains the controls without revealing a route")
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.bottom, 12)
+            .onAppear {
+                setupScene(side: mazeSide)
+                if UIAccessibility.isVoiceOverRunning {
+                    DispatchQueue.main.async { isBallFocused = true }
+                }
+            }
         }
         .onReceive(movementTimer) { _ in
             guard !joystickRequiresRelease else { return }
@@ -106,12 +116,6 @@ struct GameView: View {
             gameScene?.steer(horizontal: horizontal,
                              vertical: vertical,
                              deltaTime: frameDuration)
-        }
-        .onAppear {
-            setupScene()
-            if UIAccessibility.isVoiceOverRunning {
-                DispatchQueue.main.async { isBallFocused = true }
-            }
         }
         .onDisappear {
             gameScene?.onCollision = nil
@@ -166,9 +170,8 @@ struct GameView: View {
         .accessibilityHidden(true)
     }
 
-    private func setupScene() {
+    private func setupScene(side: CGFloat) {
         guard gameScene == nil else { return }
-        let side = min(UIScreen.main.bounds.width - 32, 390)
         let scene = GameScene(appState: appState, size: CGSize(width: side, height: side))
         scene.scaleMode = .aspectFit
         scene.onCollision = {
