@@ -112,6 +112,11 @@ struct SignalTrainingView: View {
                          hint: "The ball was found by touch") {
                 HapticManager.ballTouched()
             }
+            signalButton("Find joystick", file: "bonus",
+                         hint: "Higher-pitched signal for the joystick",
+                         playbackRate: 1.3) {
+                HapticManager.joystickLocated()
+            }
             signalButton("Near wall", file: "ufo",
                          hint: "This sound grows louder as a wall gets closer") {
                 HapticManager.ballMoving()
@@ -163,22 +168,25 @@ struct SignalTrainingView: View {
         _ title: String,
         file: String,
         hint: String,
+        playbackRate: Float = 1,
         haptic: @escaping () -> Void
     ) -> some View {
         squareButton(title) {
-            playSound(named: file)
+            playSound(named: file, playbackRate: playbackRate)
             haptic()
         }
         .accessibilityHint(hint)
     }
 
-    private func playSound(named name: String) {
+    private func playSound(named name: String, playbackRate: Float = 1) {
         stopSound()
         guard let url = Bundle.main.url(forResource: name, withExtension: "mp3") else {
             return
         }
         do {
             player = try AVAudioPlayer(contentsOf: url)
+            player?.enableRate = true
+            player?.rate = playbackRate
             player?.volume = 0.7
             player?.play()
         } catch {
