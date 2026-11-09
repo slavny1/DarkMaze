@@ -130,19 +130,11 @@ final class GameScene: SKScene {
         ball = SKShapeNode(circleOfRadius: radius)
         ball.fillColor = .white
         ball.strokeColor = .white
-        ball.alpha = appState.hideBall ? 0 : 1
+        // Keep the ball visible while experimental hidden-ball discovery is disabled.
+        ball.alpha = 1
         ball.position = initialPosition ?? .zero
         fatherTile.addChild(ball)
         updateWallSound()
-    }
-
-    // Position in UIKit/SwiftUI coordinates, with the origin at top left.
-    var ballPositionInView: CGPoint? {
-        guard ball != nil else { return nil }
-        return CGPoint(
-            x: size.width / 2 + ball.position.x,
-            y: size.height / 2 - ball.position.y
-        )
     }
 
     private var ballRadius: CGFloat { tileWidth * 0.12 }
@@ -275,14 +267,13 @@ final class GameScene: SKScene {
         let closeness = wallCloseness()
         audioPlayer?.updateVolume(volume: proximityVolume())
 
-        // Increasing strength and frequency, with no vibration far
-        // from walls. Cues never describe which direction to choose.
-        if closeness >= 0.56 {
-            let warning = (closeness - 0.56) / 0.44
-            let interval = 0.48 - Double(warning) * 0.33
+        // Near-wall taps become faster as the ball approaches a surface.
+        // They complement the rising audio without exposing directions.
+        if closeness >= 0.82 {
+            let interval = 0.5 - Double(closeness) * 0.3
             let now = Date()
             if now.timeIntervalSince(lastWallHaptic) >= interval {
-                HapticManager.wallProximity(intensity: warning)
+                HapticManager.ballMoving()
                 lastWallHaptic = now
             }
         }
@@ -326,8 +317,6 @@ final class GameScene: SKScene {
     // MARK: Direct touch dragging
 
     private func trySelectBall(at point: CGPoint) {
-        // Match the screen-wide discovery target, so a found ball can
-        // always be grabbed without pixel-perfect positioning.
         let selectionRadius = max(ballRadius * 2.5, 30)
         guard !touchIsDragging, !ballFoundDuringTouch,
               hypot(point.x - ball.position.x, point.y - ball.position.y) <= selectionRadius else {
@@ -337,8 +326,8 @@ final class GameScene: SKScene {
         lastTouchLocation = point
         touchIsDragging = true
         joystickNeedsRelease = false
-        // The screen-wide discovery gesture owns the confirmation cue.
-        // Avoid playing two overlapping "ball found" sounds.
+        HapticManager.ballTouched()
+        run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
         beginMovementSound()
     }
 
