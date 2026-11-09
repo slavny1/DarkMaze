@@ -67,16 +67,16 @@ struct GameView: View {
                         .accessibilityAddTraits(.allowsDirectInteraction)
                         .accessibilityFocused($isBallFocused)
                         .accessibilityAction(named: Text("Nudge up")) {
-                            gameScene.nudgeBall(dx: 0, dy: 1)
+                            gameScene.nudgeBall(horizontal: 0, vertical: 1)
                         }
                         .accessibilityAction(named: Text("Nudge down")) {
-                            gameScene.nudgeBall(dx: 0, dy: -1)
+                            gameScene.nudgeBall(horizontal: 0, vertical: -1)
                         }
                         .accessibilityAction(named: Text("Nudge left")) {
-                            gameScene.nudgeBall(dx: -1, dy: 0)
+                            gameScene.nudgeBall(horizontal: -1, vertical: 0)
                         }
                         .accessibilityAction(named: Text("Nudge right")) {
-                            gameScene.nudgeBall(dx: 1, dy: 0)
+                            gameScene.nudgeBall(horizontal: 1, vertical: 0)
                         }
                 }
 
