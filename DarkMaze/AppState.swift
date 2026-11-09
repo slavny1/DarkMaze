@@ -26,6 +26,12 @@ final class AppState: ObservableObject {
         }
     }
 
+    @Published var hideBall = false {
+        didSet {
+            UserDefaults.standard.set(hideBall, forKey: "hideBall")
+        }
+    }
+
     @Published var topLevel: GameLevel {
         didSet {
             UserDefaults.standard.set(topLevel.rawValue, forKey: "topLevel")
@@ -49,6 +55,7 @@ final class AppState: ObservableObject {
     init() {
         self.topLevel = .init(rawValue: UserDefaults.standard.integer(forKey: "topLevel")) ?? .zero
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
+        self.hideBall = UserDefaults.standard.bool(forKey: "hideBall")
         // Show accessible introduction on a truly fresh install.
         // Preserve the choice of returning players.
         if UserDefaults.standard.object(forKey: "isOnboarding") == nil {
@@ -80,12 +87,15 @@ extension AppState {
         case one
         case two
         case three
+        case four
+        case five
+        case six
 
         var isLastLevel: Bool { self == lastLevel }
-        var lastLevel: Self { .three }
+        var lastLevel: Self { .six }
 
         func nextLevel() -> GameLevel {
-            return Self(rawValue: self.rawValue + 1) ?? .three
+            return Self(rawValue: self.rawValue + 1) ?? .six
         }
     }
 }
