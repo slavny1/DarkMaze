@@ -316,8 +316,9 @@ final class GameScene: SKScene {
     // MARK: Direct touch dragging
 
     private func trySelectBall(at point: CGPoint) {
+        let selectionRadius = max(ballRadius * 2.5, 22)
         guard !touchIsDragging, !ballFoundDuringTouch,
-              hypot(point.x - ball.position.x, point.y - ball.position.y) <= ballRadius * 2.5 else {
+              hypot(point.x - ball.position.x, point.y - ball.position.y) <= selectionRadius else {
             return
         }
         ballFoundDuringTouch = true
