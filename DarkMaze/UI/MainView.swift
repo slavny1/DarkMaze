@@ -57,15 +57,6 @@ struct MainView: View {
             .accessibilityLabel("Blind mode")
             .accessibilityHint("Hides visible maze corridors but keeps audio and vibration")
 
-            Toggle(isOn: $appState.hideBall) {
-                Text(appState.hideBall ? "Hide ball: on" : "Hide ball: off")
-                    .foregroundColor(.white)
-                    .font(.system(size: 18, weight: .black, design: .monospaced))
-            }
-            .toggleStyle(BlindModeToggleStyle())
-            .frame(width: 250, height: 48)
-            .accessibilityLabel("Hide ball")
-            .accessibilityHint("Locate the invisible ball by sweeping a finger across the maze")
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 16)
@@ -111,11 +102,6 @@ struct SignalTrainingView: View {
             signalButton("Find ball", file: "bonus",
                          hint: "The ball was found by touch") {
                 HapticManager.ballTouched()
-            }
-            signalButton("Find joystick", file: "bonus",
-                         hint: "Higher-pitched signal for the joystick",
-                         playbackRate: 1.3) {
-                HapticManager.joystickLocated()
             }
             signalButton("Near wall", file: "ufo",
                          hint: "This sound grows louder as a wall gets closer") {
@@ -168,25 +154,22 @@ struct SignalTrainingView: View {
         _ title: String,
         file: String,
         hint: String,
-        playbackRate: Float = 1,
         haptic: @escaping () -> Void
     ) -> some View {
         squareButton(title) {
-            playSound(named: file, playbackRate: playbackRate)
+            playSound(named: file)
             haptic()
         }
         .accessibilityHint(hint)
     }
 
-    private func playSound(named name: String, playbackRate: Float = 1) {
+    private func playSound(named name: String) {
         stopSound()
         guard let url = Bundle.main.url(forResource: name, withExtension: "mp3") else {
             return
         }
         do {
             player = try AVAudioPlayer(contentsOf: url)
-            player?.enableRate = true
-            player?.rate = playbackRate
             player?.volume = 0.7
             player?.play()
         } catch {
