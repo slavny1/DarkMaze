@@ -17,7 +17,7 @@ struct TabOnboardingView: View {
                 .foregroundColor(.white)
                 .accessibilityAddTraits(.isHeader)
 
-            Text("Find your way through a maze using sound and vibration. You can move the ball directly, drag the joystick, or use the four movement buttons with VoiceOver.")
+            Text("Find your way through a maze using sound and vibration. Drag the ball directly, or tilt the on-screen joystick for slow movement. With VoiceOver, focus the ball and use its directional actions. Walls make sound before you touch them; a collision sends the ball back to the start.")
                 .font(.body)
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
