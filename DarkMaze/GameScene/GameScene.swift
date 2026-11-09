@@ -173,6 +173,7 @@ final class GameScene: SKScene {
     /// VoiceOver action makes a *short* nudge, never jumps a full cell.
     func nudgeBall(dx: Int, dy: Int) {
         guard abs(dx) + abs(dy) == 1 else { return }
+        joystickNeedsRelease = false
         beginMovementSound()
         moveBall(by: CGVector(dx: CGFloat(dx) * tileWidth * 0.08,
                               dy: CGFloat(dy) * tileWidth * 0.08))
@@ -252,6 +253,7 @@ final class GameScene: SKScene {
     }
 
     private var isMovementSoundPlaying = false
+    private var lastWallHaptic = Date.distantPast
 
     private func updateWallSound() {
         guard isMovementSoundPlaying, ball != nil else { return }
@@ -261,6 +263,17 @@ final class GameScene: SKScene {
         let closeness = max(0, min(1, (listeningDistance - proximity) / listeningDistance))
         let loudness = Float(0.015 + closeness * closeness * 0.65)
         audioPlayer?.updateVolume(volume: loudness)
+
+        // Near-wall taps become faster as the ball approaches a surface.
+        // They complement the rising audio without exposing directions.
+        if closeness > 0.3 {
+            let interval = 0.55 - Double(closeness) * 0.38
+            let now = Date()
+            if now.timeIntervalSince(lastWallHaptic) >= interval {
+                HapticManager.ballMoving()
+                lastWallHaptic = now
+            }
+        }
     }
 
     private func stopMovementSound() {
