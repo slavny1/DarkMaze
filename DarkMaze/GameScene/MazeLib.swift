@@ -46,7 +46,7 @@ enum MazeLibrary {
 
         // Compare valid, one-cell-wide layouts to favour intersections.
         // The finite attempt limit protects app launch performance.
-        for _ in 0..<24 {
+        for _ in 0..<12 {
             guard let candidate = candidateMaze(side: side),
                   candidate != previous,
                   hasPathToExit(candidate),
@@ -125,7 +125,7 @@ enum MazeLibrary {
 
         func fill(_ index: Int) -> Bool {
             searchCount += 1
-            guard searchCount < 100_000 else { return false }
+            guard searchCount < 20_000 else { return false }
             if index == side * side { return true }
             let currentRow = index / side
             let currentColumn = index % side
