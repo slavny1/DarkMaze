@@ -129,7 +129,7 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
-		133E1A7D2A3B99EF00DF80AF /* Sounds */ = {
+		133E1A7D2A3B99EF00DF80AF /* sounds */ = {
 			isa = PBXGroup;
 			children = (
 				1352FF9429FBC036002799A9 /* bonus.mp3 */,
@@ -138,7 +138,7 @@
 				1352FF9129FBC036002799A9 /* wall.mp3 */,
 				1352FF9029FBC036002799A9 /* win.mp3 */,
 			);
-			path = Sounds;
+			path = sounds;
 			sourceTree = "<group>";
 		};
 		133E1A7E2A3B9C3F00DF80AF /* Provisional UI */ = {
@@ -205,7 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				133E1A792A3B966A00DF80AF /* JSON animation */,
-				133E1A7D2A3B99EF00DF80AF /* Sounds */,
+				133E1A7D2A3B99EF00DF80AF /* sounds */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

@@ -31,6 +31,8 @@ struct AppFlowView: View {
                 } else if appState.state == .level {
                     LevelsListView()
                         .transition(AnyTransition.scale.animation(.easeInOut(duration: 0.3)))
+                } else if appState.state == .signals {
+                    SignalTrainingView()
                 }
             }
         }

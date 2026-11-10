@@ -11,6 +11,8 @@ final class AppState: ObservableObject {
     @Published var state: GameState = .main
     @Published var gameLevel: GameLevel = .zero
     @Published var gameID = UUID()
+    // 0...2 is a guided, deterministic maze; nil is the regular game.
+    @Published var tutorialStage: Int?
 
     @Published var isOnboarding = true {
         didSet {
@@ -24,16 +26,58 @@ final class AppState: ObservableObject {
         }
     }
 
+    @Published var hideBall = false {
+        didSet {
+            UserDefaults.standard.set(hideBall, forKey: "hideBall")
+        }
+    }
+
+    @Published var hideFinish = false {
+        didSet {
+            UserDefaults.standard.set(hideFinish, forKey: "hideFinish")
+        }
+    }
+
     @Published var topLevel: GameLevel {
         didSet {
             UserDefaults.standard.set(topLevel.rawValue, forKey: "topLevel")
         }
     }
 
+    func setTutorialStage(_ stage: Int) {
+        tutorialStage = stage
+        // Each lesson removes one additional visual aid.
+        blindMode = stage >= 1
+        hideBall = stage >= 2
+        hideFinish = stage >= 3
+        gameID = UUID()
+        state = .game
+    }
+
+    func startTutorial() {
+        setTutorialStage(0)
+        isOnboarding = false
+    }
+
+    func startRegularGame(level: GameLevel) {
+        tutorialStage = nil
+        gameLevel = level
+        gameID = UUID()
+        state = .game
+    }
+
     init() {
         self.topLevel = .init(rawValue: UserDefaults.standard.integer(forKey: "topLevel")) ?? .zero
         self.blindMode = UserDefaults.standard.bool(forKey: "blindMode")
-        self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+        self.hideBall = UserDefaults.standard.bool(forKey: "hideBall")
+        self.hideFinish = UserDefaults.standard.bool(forKey: "hideFinish")
+        // Show accessible introduction on a truly fresh install.
+        // Preserve the choice of returning players.
+        if UserDefaults.standard.object(forKey: "isOnboarding") == nil {
+            self.isOnboarding = true
+        } else {
+            self.isOnboarding = UserDefaults.standard.bool(forKey: "isOnboarding")
+        }
 
     }
 }
@@ -42,7 +86,7 @@ final class AppState: ObservableObject {
 
 extension AppState {
     enum GameState {
-        case main, game, win, level
+        case main, game, win, level, signals
     }
 }
 
@@ -58,12 +102,15 @@ extension AppState {
         case one
         case two
         case three
+        case four
+        case five
+        case six
 
         var isLastLevel: Bool { self == lastLevel }
-        var lastLevel: Self { .three }
+        var lastLevel: Self { .six }
 
         func nextLevel() -> GameLevel {
-            return Self(rawValue: self.rawValue + 1) ?? .three
+            return Self(rawValue: self.rawValue + 1) ?? .six
         }
     }
 }
