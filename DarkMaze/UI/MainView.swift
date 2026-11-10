@@ -40,22 +40,12 @@ struct MainView: View {
             menuButton("Tutorial") {
                 appState.startTutorial()
             }
-            .accessibilityHint("Play three short beginner mazes")
+            .accessibilityHint("Play four gradual practice levels")
 
             menuButton("Sounds and haptics") {
                 appState.state = .signals
             }
             .accessibilityHint("Practice game sounds and vibrations before playing")
-
-            Toggle(isOn: $appState.blindMode) {
-                Text(appState.blindMode ? "Blind mode on" : "Blind mode off")
-                    .foregroundColor(.white)
-                    .font(.system(size: 18, weight: .black, design: .monospaced))
-            }
-            .toggleStyle(BlindModeToggleStyle())
-            .frame(width: 250, height: 48)
-            .accessibilityLabel("Blind mode")
-            .accessibilityHint("Hides visible maze corridors but keeps audio and vibration")
 
         }
         .frame(maxWidth: .infinity)
