@@ -20,14 +20,14 @@ struct TabOnboardingView: View {
             Text(
                 "Find your way through a maze using sound and vibration. " +
                 "Drag the ball directly, or tilt the on-screen joystick for slow movement. " +
-                "With VoiceOver, focus the ball and use its directional actions. " +
+                "With VoiceOver, focus the joystick to control the ball. " +
                 "Walls make sound before you touch them; a collision sends the ball back to the start."
             )
                 .font(.body)
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
 
-            Text("We recommend starting with the sound signals, then trying three short practice mazes.")
+            Text("We recommend starting with the sound signals, then trying four short practice mazes.")
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
 
@@ -40,7 +40,7 @@ struct TabOnboardingView: View {
             Button("Start guided tutorial") {
                 appState.startTutorial()
             }
-            .accessibilityHint("Start with a simple straight corridor")
+            .accessibilityHint("Practice movement before gradually hiding the maze, ball and finish")
 
             Button("Go to main menu") {
                 appState.isOnboarding = false
