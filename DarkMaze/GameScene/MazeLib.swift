@@ -6,13 +6,8 @@
 import Foundation
 
 enum MazeLibrary {
-    // Only the three guided tutorials use fixed layouts.
-    // Regular levels get a new randomized maze on every run or replay.
     private static var lastGenerated: [AppState.GameLevel: [[UInt8]]] = [:]
-
-    private static let directions: [(row: Int, column: Int)] = [
-        (1, 0), (-1, 0), (0, 1), (0, -1)
-    ]
+    private static let directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
     // Bottom-left is the starting tile. Tutorial goal is defined separately
     // so the first exercise can be an actual straight corridor.
@@ -44,111 +39,179 @@ enum MazeLibrary {
     }
 
     static func randomMaze(level: AppState.GameLevel) -> [[UInt8]] {
-        // Visible levels 1...7: grids from 4x4 through 10x10.
         let side = level.rawValue + 4
-        var maze = generateMaze(side: side)
+        let previous = lastGenerated[level]
+        var best: [[UInt8]]?
+        var highestScore = Int.min
 
-        if let previous = lastGenerated[level] {
-            // Avoid immediately repeating an identical maze on "Play again".
-            var attempts = 0
-            while maze == previous && attempts < 30 {
-                maze = generateMaze(side: side)
-                attempts += 1
-            }
-
-            // Guaranteed difference even if randomness repeatedly returned
-            // the same layout. Opening a wall cannot remove the valid route.
-            if maze == previous {
-                changeOneWall: for row in 0..<side {
-                    for column in 0..<side where maze[row][column] == 0 {
-                        maze[row][column] = 1
-                        break changeOneWall
-                    }
-                }
+        // Compare multiple valid layouts to favour intersections and loops.
+        // The finite attempt limit protects app launch performance.
+        for _ in 0..<24 {
+            guard let candidate = candidateMaze(side: side),
+                  candidate != previous,
+                  hasPathToExit(candidate),
+                  obeysRunLimit(candidate) else { continue }
+            let score = interestScore(candidate)
+            if score > highestScore {
+                best = candidate
+                highestScore = score
             }
         }
-
-        precondition(hasPathToExit(maze), "Maze must contain a path to the exit")
+        // An alternate valid layout with a guaranteed route is always available.
+        let maze = best ?? fallbackMaze(side: side)
+        precondition(hasPathToExit(maze) && obeysRunLimit(maze))
         lastGenerated[level] = maze
         return maze
     }
 
-    // Iterative randomized depth-first carving on a coarse grid.
-    // Every carved node is connected, so the start can reach the exit.
-    private static func generateMaze(side: Int) -> [[UInt8]] {
-        var maze = Array(repeating: Array(repeating: UInt8(0), count: side), count: side)
-        let coarseSide = (side + 1) / 2
-        var visited = Array(repeating: Array(repeating: false, count: coarseSide), count: coarseSide)
-        var stack: [(row: Int, column: Int)] = [(0, 0)]
+    // On 4x4, N-3 = 1 would forbid two adjacent passage cells and thus
+    // any route between corners. The smallest feasible run is two.
+    private static func runLimit(side: Int) -> Int {
+        max(2, side - 3)
+    }
 
-        maze[0][0] = 1
-        visited[0][0] = true
-
-        while let current = stack.last {
-            let neighbors = directions.shuffled().compactMap { direction -> (row: Int, column: Int)? in
-                let nextRow = current.row + direction.row
-                let nextColumn = current.column + direction.column
-                guard nextRow >= 0, nextRow < coarseSide,
-                      nextColumn >= 0, nextColumn < coarseSide,
-                      !visited[nextRow][nextColumn] else { return nil }
-                return (row: nextRow, column: nextColumn)
+    private static func candidateMaze(side: Int) -> [[UInt8]]? {
+        // Plant a randomized route from start to finish before adding
+        // side passages. A monotone route always terminates at the goal.
+        let limit = runLimit(side: side)
+        var compulsory = Set<Int>([0])
+        var row = 0
+        var column = 0
+        var lastDirection = -1
+        var directionStreak = 0
+        while row < side - 1 || column < side - 1 {
+            let options = [0, 1].filter { direction in
+                let available = direction == 0 ? column < side - 1 : row < side - 1
+                return available && (direction != lastDirection || directionStreak < limit - 1)
             }
-
-            if let next = neighbors.first {
-                // Carve a connecting passage between neighbouring nodes.
-                let passageRow = current.row * 2 + next.row - current.row
-                let passageColumn = current.column * 2 + next.column - current.column
-                maze[passageRow][passageColumn] = 1
-                maze[next.row * 2][next.column * 2] = 1
-                visited[next.row][next.column] = true
-                stack.append(next)
-            } else {
-                stack.removeLast()
-            }
+            guard let selected = options.randomElement() else { return nil }
+            if selected == 0 { column += 1 } else { row += 1 }
+            compulsory.insert(row * side + column)
+            directionStreak = selected == lastDirection ? directionStreak + 1 : 1
+            lastDirection = selected
         }
 
-        // On even grids the bottom-right corner is not a coarse-grid node.
-        // Attach it to the connected node at (side-2, side-2).
-        if side.isMultiple(of: 2) {
-            maze[side - 1][side - 1] = 1
-            if Bool.random() {
-                maze[side - 2][side - 1] = 1
-            } else {
-                maze[side - 1][side - 2] = 1
+        var cells = Array(repeating: Array(repeating: UInt8(2), count: side), count: side)
+        var searchCount = 0
+
+        func canPlace(_ value: UInt8, row: Int, column: Int) -> Bool {
+            var horizontalRun = 1
+            var previousColumn = column - 1
+            while previousColumn >= 0 && cells[row][previousColumn] == value {
+                horizontalRun += 1
+                previousColumn -= 1
+            }
+            guard horizontalRun <= limit else { return false }
+
+            var verticalRun = 1
+            var previousRow = row - 1
+            while previousRow >= 0 && cells[previousRow][column] == value {
+                verticalRun += 1
+                previousRow -= 1
+            }
+            return verticalRun <= limit
+        }
+
+        func fill(_ index: Int) -> Bool {
+            searchCount += 1
+            guard searchCount < 100_000 else { return false }
+            if index == side * side { return true }
+            let currentRow = index / side
+            let currentColumn = index % side
+            let choices: [UInt8] = compulsory.contains(index) ? [1] :
+                (Bool.random() ? [1, 0] : [0, 1])
+            for choice in choices where canPlace(choice, row: currentRow, column: currentColumn) {
+                cells[currentRow][currentColumn] = choice
+                if fill(index + 1) { return true }
+                cells[currentRow][currentColumn] = 2
+            }
+            return false
+        }
+
+        return fill(0) ? cells : nil
+    }
+
+    private static func fallbackMaze(side: Int) -> [[UInt8]] {
+        // Deterministic alternating diagonal route, used only if the
+        // bounded random attempts fail. Other cells break long runs.
+        var maze = Array(repeating: Array(repeating: UInt8(0), count: side), count: side)
+        for index in 0..<side {
+            maze[index][index] = 1
+            if index < side - 1 { maze[index][index + 1] = 1 }
+        }
+        for index in 0..<side {
+            if maze[side - 1][index] == 0 && index == 0 {
+                maze[side - 1][index] = 1
+            }
+            if maze[index][side - 1] == 0 && index == 0 {
+                maze[index][side - 1] = 1
             }
         }
         return maze
     }
 
-    // Independent reachability check used for every generated maze.
+    static func obeysRunLimit(_ maze: [[UInt8]]) -> Bool {
+        let side = maze.count
+        guard side > 0, maze.allSatisfy({ $0.count == side }) else { return false }
+        let limit = runLimit(side: side)
+        for row in 0..<side {
+            for horizontal in [true, false] {
+                var previous: UInt8 = 2
+                var runLength = 0
+                for column in 0..<side {
+                    let value = horizontal ? maze[row][column] : maze[column][row]
+                    runLength = value == previous ? runLength + 1 : 1
+                    if runLength > limit { return false }
+                    previous = value
+                }
+            }
+        }
+        return true
+    }
+
+    private static func interestScore(_ maze: [[UInt8]]) -> Int {
+        let side = maze.count
+        var intersections = 0
+        var walkable = 0
+        for row in 0..<side {
+            for column in 0..<side where maze[row][column] == 1 {
+                walkable += 1
+                let neighbors = directions.filter { offset in
+                    let nextRow = row + offset.0
+                    let nextColumn = column + offset.1
+                    return nextRow >= 0 && nextColumn >= 0 &&
+                        nextRow < side && nextColumn < side &&
+                        maze[nextRow][nextColumn] == 1
+                }.count
+                if neighbors >= 3 { intersections += 1 }
+            }
+        }
+        // Prefer distinct intersections but avoid filling the entire grid.
+        return intersections * 7 - abs(walkable - side * side * 2 / 3)
+    }
+
     static func hasPathToExit(_ maze: [[UInt8]]) -> Bool {
         let side = maze.count
-        guard side > 0,
-              maze.allSatisfy({ $0.count == side }),
-              maze[0][0] == 1,
-              maze[side - 1][side - 1] == 1 else { return false }
+        guard side > 0, maze.allSatisfy({ $0.count == side }),
+              maze[0][0] == 1, maze[side - 1][side - 1] == 1 else { return false }
 
         var visited = Array(repeating: Array(repeating: false, count: side), count: side)
-        var queue: [(row: Int, column: Int)] = [(0, 0)]
+        var queue = [(0, 0)]
         visited[0][0] = true
         var index = 0
-
         while index < queue.count {
             let current = queue[index]
             index += 1
-            if current.row == side - 1 && current.column == side - 1 {
-                return true
-            }
-
+            if current.0 == side - 1 && current.1 == side - 1 { return true }
             for direction in directions {
-                let nextRow = current.row + direction.row
-                let nextColumn = current.column + direction.column
-                guard nextRow >= 0, nextRow < side,
-                      nextColumn >= 0, nextColumn < side,
-                      !visited[nextRow][nextColumn],
-                      maze[nextRow][nextColumn] == 1 else { continue }
+                let nextRow = current.0 + direction.0
+                let nextColumn = current.1 + direction.1
+                guard nextRow >= 0 && nextColumn >= 0 &&
+                        nextRow < side && nextColumn < side &&
+                        !visited[nextRow][nextColumn] &&
+                        maze[nextRow][nextColumn] == 1 else { continue }
                 visited[nextRow][nextColumn] = true
-                queue.append((row: nextRow, column: nextColumn))
+                queue.append((nextRow, nextColumn))
             }
         }
         return false
