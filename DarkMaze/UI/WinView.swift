@@ -30,10 +30,8 @@ struct WinView: View {
 
             Button {
                 if let stage = appState.tutorialStage {
-                    if stage < 2 {
-                        appState.tutorialStage = stage + 1
-                        appState.gameID = UUID()
-                        appState.state = .game
+                    if stage < 3 {
+                        appState.setTutorialStage(stage + 1)
                     } else {
                         appState.tutorialStage = nil
                         appState.state = .main
@@ -45,7 +43,7 @@ struct WinView: View {
                 }
             } label: {
                 Text(appState.tutorialStage == nil ? "Next level" :
-                     (appState.tutorialStage == 2 ? "Finish tutorial" : "Next tutorial"))
+                     (appState.tutorialStage == 3 ? "Finish tutorial" : "Next tutorial"))
                     .frame(width: 250, height: 50)
                     .background(Color.black)
                     .foregroundColor(appState.tutorialStage == nil && appState.gameLevel.isLastLevel ? .gray : .white)
