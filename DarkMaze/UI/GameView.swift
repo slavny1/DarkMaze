@@ -58,14 +58,6 @@ struct GameView: View {
                     .foregroundColor(.white)
                     .accessibilityAddTraits(.isHeader)
 
-                if let gameScene {
-                    SpriteView(scene: gameScene, transition: nil)
-                        .frame(width: mazeSide, height: mazeSide)
-                        .clipped()
-                        .accessibilityHidden(true)
-                }
-
-
                 HStack(spacing: 8) {
                     visibilityButton("Maze", hidden: appState.blindMode) {
                         appState.blindMode.toggle()
@@ -81,6 +73,14 @@ struct GameView: View {
                     }
                 }
                 .padding(.top, 2)
+
+                if let gameScene {
+                    SpriteView(scene: gameScene, transition: nil)
+                        .frame(width: mazeSide, height: mazeSide)
+                        .clipped()
+                        .accessibilityHidden(true)
+                }
+
 
                 joystick
                     .padding(.vertical, 4)
@@ -121,9 +121,11 @@ struct GameView: View {
                 }
                 .accessibilityHint("Exit the current maze")
             }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Reset") { appState.gameID = UUID() }
-                    .accessibilityHint("Restart this maze from the beginning")
+            if appState.tutorialStage == nil {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Reset") { appState.gameID = UUID() }
+                        .accessibilityHint("Restart this maze from the beginning")
+                }
             }
         }
     }
