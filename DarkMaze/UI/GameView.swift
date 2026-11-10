@@ -14,7 +14,7 @@ struct GameView: View {
     @State private var joystickOffset: CGSize = .zero
     @State private var joystickRequiresRelease = false
     @State private var joystickTouched = false
-    @AccessibilityFocusState private var isBallFocused: Bool
+    @AccessibilityFocusState private var isJoystickFocused: Bool
 
     private let joystickRadius: CGFloat = 50
     private let frameDuration: CGFloat = 1.0 / 60.0
@@ -22,9 +22,9 @@ struct GameView: View {
 
     private var heading: String {
         if let stage = appState.tutorialStage {
-            return "Tutorial \(stage + 1) of 3"
+            return "Tutorial \(stage + 1) of 4"
         }
-        return "Level \(appState.gameLevel.rawValue)"
+        return "Level \(appState.gameLevel.rawValue + 1)"
     }
 
     private var instructions: String {
@@ -34,7 +34,9 @@ struct GameView: View {
         case 1:
             return "Explore a corridor with a turn. Changes in the sound help you sense nearby walls."
         case 2:
-            return "Find your way through the winding maze using only sound and touch."
+            return "The ball is hidden. Navigate using the joystick and wall signals."
+        case 3:
+            return "The finish is hidden too. Find it by sound and touch."
         default:
             return "Drag the ball directly or hold the joystick gently. " +
                 "Wall sounds grow louder as you approach. " +
@@ -60,28 +62,25 @@ struct GameView: View {
                     SpriteView(scene: gameScene, transition: nil)
                         .frame(width: mazeSide, height: mazeSide)
                         .clipped()
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Maze, touch to find the ball")
-                        .accessibilityHint(
-                            "Explore by touch. Select the ball to drag it. " +
-                            "VoiceOver actions allow small nudges."
-                        )
-                        .accessibilityAddTraits(.allowsDirectInteraction)
-                        .accessibilityFocused($isBallFocused)
-                        .accessibilityAction(named: Text("Nudge up")) {
-                            gameScene.nudgeBall(horizontal: 0, vertical: 1)
-                        }
-                        .accessibilityAction(named: Text("Nudge down")) {
-                            gameScene.nudgeBall(horizontal: 0, vertical: -1)
-                        }
-                        .accessibilityAction(named: Text("Nudge left")) {
-                            gameScene.nudgeBall(horizontal: -1, vertical: 0)
-                        }
-                        .accessibilityAction(named: Text("Nudge right")) {
-                            gameScene.nudgeBall(horizontal: 1, vertical: 0)
-                        }
+                        .accessibilityHidden(true)
                 }
 
+
+                HStack(spacing: 8) {
+                    visibilityButton("Maze", hidden: appState.blindMode) {
+                        appState.blindMode.toggle()
+                        gameScene?.updateVisibility()
+                    }
+                    visibilityButton("Ball", hidden: appState.hideBall) {
+                        appState.hideBall.toggle()
+                        gameScene?.updateVisibility()
+                    }
+                    visibilityButton("Finish", hidden: appState.hideFinish) {
+                        appState.hideFinish.toggle()
+                        gameScene?.updateVisibility()
+                    }
+                }
+                .padding(.top, 2)
 
                 joystick
                     .padding(.vertical, 4)
@@ -97,7 +96,7 @@ struct GameView: View {
             .onAppear {
                 setupScene(side: mazeSide)
                 if UIAccessibility.isVoiceOverRunning {
-                    DispatchQueue.main.async { isBallFocused = true }
+                    DispatchQueue.main.async { isJoystickFocused = true }
                 }
             }
         }
@@ -168,6 +167,30 @@ struct GameView: View {
         .accessibilityLabel("Joystick, bottom centre")
         .accessibilityHint("Touch and hold, then drag gently to steer the ball")
         .accessibilityAddTraits(.allowsDirectInteraction)
+        .accessibilityFocused($isJoystickFocused)
+    }
+
+    private func visibilityButton(
+        _ label: String,
+        hidden: Bool,
+        onTap: @escaping () -> Void
+    ) -> some View {
+        Button {
+            onTap()
+            HapticManager.buttonTapped()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: hidden ? "eye.slash" : "eye")
+                Text(label)
+            }
+            .font(.system(size: 11, weight: .bold, design: .monospaced))
+            .foregroundColor(hidden ? .gray : .white)
+            .frame(minWidth: 70, minHeight: 34)
+            .overlay(Rectangle().stroke(.white.opacity(0.6), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(label), \(hidden ? "hidden" : "visible")")
+        .accessibilityHint("Double tap to toggle visibility")
     }
 
     private func setupScene(side: CGFloat) {
