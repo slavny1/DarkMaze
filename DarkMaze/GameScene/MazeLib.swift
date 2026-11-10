@@ -44,13 +44,14 @@ enum MazeLibrary {
         var best: [[UInt8]]?
         var highestScore = Int.min
 
-        // Compare multiple valid layouts to favour intersections and loops.
+        // Compare valid, one-cell-wide layouts to favour intersections.
         // The finite attempt limit protects app launch performance.
         for _ in 0..<24 {
             guard let candidate = candidateMaze(side: side),
                   candidate != previous,
                   hasPathToExit(candidate),
-                  obeysRunLimit(candidate) else { continue }
+                  obeysRunLimit(candidate),
+                  hasSingleCellCorridors(candidate) else { continue }
             let score = interestScore(candidate)
             if score > highestScore {
                 best = candidate
@@ -59,7 +60,9 @@ enum MazeLibrary {
         }
         // An alternate valid layout with a guaranteed route is always available.
         let maze = best ?? fallbackMaze(side: side)
-        precondition(hasPathToExit(maze) && obeysRunLimit(maze))
+        precondition(hasPathToExit(maze) &&
+                     obeysRunLimit(maze) &&
+                     hasSingleCellCorridors(maze))
         lastGenerated[level] = maze
         return maze
     }
@@ -67,7 +70,7 @@ enum MazeLibrary {
     // On 4x4, N-3 = 1 would forbid two adjacent passage cells and thus
     // any route between corners. The smallest feasible run is two.
     private static func runLimit(side: Int) -> Int {
-        max(2, side - 3)
+        3
     }
 
     private static func candidateMaze(side: Int) -> [[UInt8]]? {
@@ -109,7 +112,15 @@ enum MazeLibrary {
                 verticalRun += 1
                 previousRow -= 1
             }
-            return verticalRun <= limit
+            guard verticalRun <= limit else { return false }
+            // Never carve an open 2x2 area; corridors stay one tile wide.
+            if value == 1 && row > 0 && column > 0 &&
+                cells[row - 1][column] == 1 &&
+                cells[row][column - 1] == 1 &&
+                cells[row - 1][column - 1] == 1 {
+                return false
+            }
+            return true
         }
 
         func fill(_ index: Int) -> Bool {
@@ -156,7 +167,14 @@ enum MazeLibrary {
                 vertical += 1
                 checkRow -= 1
             }
-            return vertical <= limit
+            guard vertical <= limit else { return false }
+            if value == 1 && row > 0 && column > 0 &&
+                maze[row - 1][column] == 1 &&
+                maze[row][column - 1] == 1 &&
+                maze[row - 1][column - 1] == 1 {
+                return false
+            }
+            return true
         }
 
         func fill(_ index: Int) -> Bool {
@@ -189,6 +207,24 @@ enum MazeLibrary {
                     runLength = value == previous ? runLength + 1 : 1
                     if runLength > limit { return false }
                     previous = value
+                }
+            }
+        }
+        return true
+    }
+
+    // A 2x2 open square creates a room instead of a narrow passage.
+    static func hasSingleCellCorridors(_ maze: [[UInt8]]) -> Bool {
+        let side = maze.count
+        guard side > 0, maze.allSatisfy({ $0.count == side }) else { return false }
+        guard side >= 2 else { return true }
+        for row in 1..<side {
+            for column in 1..<side {
+                if maze[row][column] == 1 &&
+                    maze[row - 1][column] == 1 &&
+                    maze[row][column - 1] == 1 &&
+                    maze[row - 1][column - 1] == 1 {
+                    return false
                 }
             }
         }
