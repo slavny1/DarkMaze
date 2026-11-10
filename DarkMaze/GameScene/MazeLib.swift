@@ -132,21 +132,47 @@ enum MazeLibrary {
     }
 
     private static func fallbackMaze(side: Int) -> [[UInt8]] {
-        // Deterministic alternating diagonal route, used only if the
-        // bounded random attempts fail. Other cells break long runs.
-        var maze = Array(repeating: Array(repeating: UInt8(0), count: side), count: side)
+        // Guaranteed diagonal stair path; complete the remaining cells
+        // using backtracking under the same run-length constraints.
+        let limit = runLimit(side: side)
+        var maze = Array(repeating: Array(repeating: UInt8(2), count: side), count: side)
+        var required = Set<Int>()
         for index in 0..<side {
-            maze[index][index] = 1
-            if index < side - 1 { maze[index][index + 1] = 1 }
+            required.insert(index * side + index)
+            if index < side - 1 { required.insert(index * side + index + 1) }
         }
-        for index in 0..<side {
-            if maze[side - 1][index] == 0 && index == 0 {
-                maze[side - 1][index] = 1
+
+        func fits(_ value: UInt8, row: Int, column: Int) -> Bool {
+            var horizontal = 1
+            var checkColumn = column - 1
+            while checkColumn >= 0 && maze[row][checkColumn] == value {
+                horizontal += 1
+                checkColumn -= 1
             }
-            if maze[index][side - 1] == 0 && index == 0 {
-                maze[index][side - 1] = 1
+            guard horizontal <= limit else { return false }
+            var vertical = 1
+            var checkRow = row - 1
+            while checkRow >= 0 && maze[checkRow][column] == value {
+                vertical += 1
+                checkRow -= 1
             }
+            return vertical <= limit
         }
+
+        func fill(_ index: Int) -> Bool {
+            if index == side * side { return true }
+            let row = index / side
+            let column = index % side
+            let options: [UInt8] = required.contains(index) ? [1] : [0, 1]
+            for option in options where fits(option, row: row, column: column) {
+                maze[row][column] = option
+                if fill(index + 1) { return true }
+                maze[row][column] = 2
+            }
+            return false
+        }
+
+        precondition(fill(0), "Unable to construct a bounded fallback maze")
         return maze
     }
 
