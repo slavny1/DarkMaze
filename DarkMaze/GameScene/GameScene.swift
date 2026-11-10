@@ -56,6 +56,7 @@ final class GameScene: SKScene {
         createFather()
         createMaze()
         createBall()
+        updateVisibility()
         audioPlayer = AudioManager()
 
         physicsWorld.gravity = .zero
@@ -94,7 +95,7 @@ final class GameScene: SKScene {
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-                tile.type = appState.blindMode ? .black : .gray
+                tile.type = .gray
 
                 // define position of a tile
                 tile.position = CGPoint(x: mazeOffset + CGFloat(column) * tileWidth,
@@ -130,11 +131,30 @@ final class GameScene: SKScene {
         ball = SKShapeNode(circleOfRadius: radius)
         ball.fillColor = .white
         ball.strokeColor = .white
-        // Keep the ball visible while experimental hidden-ball discovery is disabled.
-        ball.alpha = 1
+        ball.alpha = appState.hideBall ? 0 : 1
         ball.position = initialPosition ?? .zero
         fatherTile.addChild(ball)
         updateWallSound()
+    }
+
+    /// Visibility never affects wall detection, sound, or win logic.
+    func updateVisibility() {
+        guard fatherTile != nil, ball != nil else { return }
+        for case let tile as TileNode in fatherTile.children {
+            switch tile.type {
+            case .wall:
+                tile.fillColor = .black
+                tile.strokeColor = appState.blindMode ? .black : .white
+            case .win:
+                tile.fillColor = appState.hideFinish ?
+                    (appState.blindMode ? .black : .gray) : .white
+                tile.strokeColor = appState.blindMode ? .black : .white
+            default:
+                tile.fillColor = appState.blindMode ? .black : .gray
+                tile.strokeColor = appState.blindMode ? .black : .white
+            }
+        }
+        ball.alpha = appState.hideBall ? 0 : 1
     }
 
     private var ballRadius: CGFloat { tileWidth * 0.12 }
