@@ -44,11 +44,19 @@ final class AppState: ObservableObject {
         }
     }
 
-    func startTutorial() {
-        tutorialStage = 0
+    func setTutorialStage(_ stage: Int) {
+        tutorialStage = stage
+        // Each lesson removes one additional visual aid.
+        blindMode = stage >= 1
+        hideBall = stage >= 2
+        hideFinish = stage >= 3
         gameID = UUID()
-        isOnboarding = false
         state = .game
+    }
+
+    func startTutorial() {
+        setTutorialStage(0)
+        isOnboarding = false
     }
 
     func startRegularGame(level: GameLevel) {
