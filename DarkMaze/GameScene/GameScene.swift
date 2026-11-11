@@ -287,15 +287,16 @@ final class GameScene: SKScene {
         let closeness = wallCloseness()
         audioPlayer?.updateVolume(volume: proximityVolume())
 
-        // No vibration in the middle of the corridor. As the ball gets
-        // closer to a wall, the pulses gradually grow stronger and faster.
-        // Never speak the direction of an obstacle.
-        if closeness >= 0.62 {
-            let danger = (closeness - 0.62) / 0.38
-            let interval = 0.55 - Double(danger) * 0.38
+        // Begin with very soft pulses shortly after leaving the corridor
+        // centre. Their strength and frequency ramp up toward the wall.
+        // No spoken navigation cues or haptics at the exact centre.
+        if closeness >= 0.18 {
+            let progress = (closeness - 0.18) / 0.82
+            let response = pow(progress, 1.3)
+            let interval = 0.72 - Double(response) * 0.55
             let now = Date()
             if now.timeIntervalSince(lastWallHaptic) >= interval {
-                HapticManager.wallProximity(intensity: danger)
+                HapticManager.wallProximity(intensity: 0.1 + response * 0.9)
                 lastWallHaptic = now
             }
         }
