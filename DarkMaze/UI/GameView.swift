@@ -167,9 +167,24 @@ struct GameView: View {
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Joystick, bottom centre")
-        .accessibilityHint("Touch and hold, then drag gently to steer the ball")
+        .accessibilityHint(
+            "Touch and drag gently to steer continuously. " +
+            "With VoiceOver, use the custom actions for small directional movements."
+        )
         .accessibilityAddTraits(.allowsDirectInteraction)
         .accessibilityFocused($isJoystickFocused)
+        .accessibilityAction(named: Text("Nudge up")) {
+            gameScene?.nudgeBall(horizontal: 0, vertical: 1)
+        }
+        .accessibilityAction(named: Text("Nudge down")) {
+            gameScene?.nudgeBall(horizontal: 0, vertical: -1)
+        }
+        .accessibilityAction(named: Text("Nudge left")) {
+            gameScene?.nudgeBall(horizontal: -1, vertical: 0)
+        }
+        .accessibilityAction(named: Text("Nudge right")) {
+            gameScene?.nudgeBall(horizontal: 1, vertical: 0)
+        }
     }
 
     private func visibilityButton(
