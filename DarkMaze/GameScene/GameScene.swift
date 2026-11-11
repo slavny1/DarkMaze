@@ -287,13 +287,15 @@ final class GameScene: SKScene {
         let closeness = wallCloseness()
         audioPlayer?.updateVolume(volume: proximityVolume())
 
-        // Near-wall taps become faster as the ball approaches a surface.
-        // They complement the rising audio without exposing directions.
-        if closeness >= 0.82 {
-            let interval = 0.5 - Double(closeness) * 0.3
+        // No vibration in the middle of the corridor. As the ball gets
+        // closer to a wall, the pulses gradually grow stronger and faster.
+        // Never speak the direction of an obstacle.
+        if closeness >= 0.62 {
+            let danger = (closeness - 0.62) / 0.38
+            let interval = 0.55 - Double(danger) * 0.38
             let now = Date()
             if now.timeIntervalSince(lastWallHaptic) >= interval {
-                HapticManager.ballMoving()
+                HapticManager.wallProximity(intensity: danger)
                 lastWallHaptic = now
             }
         }
