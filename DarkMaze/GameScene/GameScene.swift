@@ -210,9 +210,9 @@ final class GameScene: SKScene {
         guard !joystickNeedsRelease, !gameFinished else { return }
         let magnitude = hypot(horizontal, vertical)
         guard magnitude > 0.04 else {
-            // Maintain the sound level while the stick is held still,
-            // allowing the player to listen to the nearest wall.
-            if isMovementSoundPlaying { updateWallSound() }
+            // The joystick is physically centred: stop motion and its
+            // continuous movement cue immediately.
+            stopMovementSound()
             return
         }
         beginMovementSound()
