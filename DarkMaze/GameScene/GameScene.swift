@@ -210,9 +210,9 @@ final class GameScene: SKScene {
         guard !joystickNeedsRelease, !gameFinished else { return }
         let magnitude = hypot(horizontal, vertical)
         guard magnitude > 0.04 else {
-            // Maintain the sound level while the stick is held still,
-            // allowing the player to listen to the nearest wall.
-            if isMovementSoundPlaying { updateWallSound() }
+            // The joystick is physically centred: stop motion and its
+            // continuous movement cue immediately.
+            stopMovementSound()
             return
         }
         beginMovementSound()
@@ -287,13 +287,16 @@ final class GameScene: SKScene {
         let closeness = wallCloseness()
         audioPlayer?.updateVolume(volume: proximityVolume())
 
-        // Near-wall taps become faster as the ball approaches a surface.
-        // They complement the rising audio without exposing directions.
-        if closeness >= 0.82 {
-            let interval = 0.5 - Double(closeness) * 0.3
+        // Begin with very soft pulses shortly after leaving the corridor
+        // centre. Their strength and frequency ramp up toward the wall.
+        // No spoken navigation cues or haptics at the exact centre.
+        if closeness >= 0.18 {
+            let progress = (closeness - 0.18) / 0.82
+            let response = pow(progress, 1.3)
+            let interval = 0.72 - Double(response) * 0.55
             let now = Date()
             if now.timeIntervalSince(lastWallHaptic) >= interval {
-                HapticManager.ballMoving()
+                HapticManager.wallProximity(intensity: 0.1 + response * 0.9)
                 lastWallHaptic = now
             }
         }
