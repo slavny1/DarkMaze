@@ -14,9 +14,11 @@ struct GameView: View {
     @State private var joystickOffset: CGSize = .zero
     @State private var joystickRequiresRelease = false
     @State private var joystickTouched = false
+    @State private var joystickCentered = true
     @AccessibilityFocusState private var isJoystickFocused: Bool
 
     private let joystickRadius: CGFloat = 50
+    private let neutralRadius: CGFloat = 9
     private let frameDuration: CGFloat = 1.0 / 60.0
     private let movementTimer = Timer.publish(every: 1.0 / 60.0, on: .main, in: .common).autoconnect()
 
@@ -155,11 +157,24 @@ struct GameView: View {
                     let horizontal = value.translation.width
                     let vertical = value.translation.height
                     let distance = hypot(horizontal, vertical)
-                    let scale = distance > joystickRadius ? joystickRadius / distance : 1
-                    joystickOffset = CGSize(width: horizontal * scale, height: vertical * scale)
+                    if distance <= neutralRadius {
+                        joystickOffset = .zero
+                        if !joystickCentered {
+                            joystickCentered = true
+                            HapticManager.joystickCentered()
+                        }
+                    } else {
+                        joystickCentered = false
+                        let scale = min(1, joystickRadius / distance)
+                        joystickOffset = CGSize(width: horizontal * scale, height: vertical * scale)
+                    }
                 }
                 .onEnded { _ in
                     joystickTouched = false
+                    if !joystickCentered {
+                        HapticManager.joystickCentered()
+                    }
+                    joystickCentered = true
                     joystickOffset = .zero
                     joystickRequiresRelease = false
                     gameScene?.releaseJoystick()
@@ -167,9 +182,24 @@ struct GameView: View {
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Joystick, bottom centre")
-        .accessibilityHint("Touch and hold, then drag gently to steer the ball")
+        .accessibilityHint(
+            "Touch and drag gently to steer continuously. " +
+            "With VoiceOver, use the custom actions for small directional movements."
+        )
         .accessibilityAddTraits(.allowsDirectInteraction)
         .accessibilityFocused($isJoystickFocused)
+        .accessibilityAction(named: Text("Nudge up")) {
+            gameScene?.nudgeBall(horizontal: 0, vertical: 1)
+        }
+        .accessibilityAction(named: Text("Nudge down")) {
+            gameScene?.nudgeBall(horizontal: 0, vertical: -1)
+        }
+        .accessibilityAction(named: Text("Nudge left")) {
+            gameScene?.nudgeBall(horizontal: -1, vertical: 0)
+        }
+        .accessibilityAction(named: Text("Nudge right")) {
+            gameScene?.nudgeBall(horizontal: 1, vertical: 0)
+        }
     }
 
     private func visibilityButton(
@@ -201,6 +231,7 @@ struct GameView: View {
         scene.scaleMode = .aspectFit
         scene.onCollision = {
             joystickOffset = .zero
+            joystickCentered = true
             joystickRequiresRelease = true
         }
         gameScene = scene
