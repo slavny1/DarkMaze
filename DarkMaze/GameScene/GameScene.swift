@@ -226,26 +226,15 @@ final class GameScene: SKScene {
     }
 
     private func isBlocked(at point: CGPoint) -> Bool {
-        let half = sizeConst / 2
-        let radius = ballRadius
-        // Check the circle's four corners against all tile rectangles.
-        let offsets: [CGPoint] = [
-            CGPoint(x: -radius, y: -radius), CGPoint(x: radius, y: -radius),
-            CGPoint(x: -radius, y: radius), CGPoint(x: radius, y: radius)
-        ]
-        for offset in offsets {
-            let sampleX = point.x + offset.x
-            let sampleY = point.y + offset.y
-            if sampleX < -half || sampleX > half || sampleY < -half || sampleY > half {
-                return true
-            }
-            let column = Int(floor((sampleX + half) / tileWidth))
-            let row = Int(floor((sampleY + half) / tileWidth))
-            guard mazeTiles.indices.contains(row),
-                  mazeTiles[row].indices.contains(column),
-                  mazeTiles[row][column] != 0 else { return true }
-        }
-        return false
+        // A wall is hit only when the ball's centre reaches its tile.
+        // Let its outer edge overlap the wall without resetting the level.
+        guard tileWidth > 0 else { return true }
+        let gridOrigin = mazeOffset - tileWidth / 2
+        let column = Int(floor((point.x - gridOrigin) / tileWidth))
+        let row = Int(floor((point.y - gridOrigin) / tileWidth))
+        guard mazeTiles.indices.contains(row),
+              mazeTiles[row].indices.contains(column) else { return true }
+        return mazeTiles[row][column] == 0
     }
 
     private func isGoal(at point: CGPoint) -> Bool {
