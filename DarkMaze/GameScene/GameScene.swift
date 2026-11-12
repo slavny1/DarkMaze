@@ -256,7 +256,12 @@ final class GameScene: SKScene {
             x: mazeOffset + CGFloat(goal.column) * tileWidth,
             y: mazeOffset + CGFloat(goal.row) * tileWidth
         )
-        return hypot(point.x - goalPosition.x, point.y - goalPosition.y) < tileWidth * 0.32
+        // Finish immediately when the edge of the ball first intersects
+        // the goal square, rather than waiting to reach its centre.
+        let halfTile = tileWidth / 2
+        let deltaX = max(abs(point.x - goalPosition.x) - halfTile, 0)
+        let deltaY = max(abs(point.y - goalPosition.y) - halfTile, 0)
+        return hypot(deltaX, deltaY) <= ballRadius
     }
 
     private func resetAfterCollision() {
