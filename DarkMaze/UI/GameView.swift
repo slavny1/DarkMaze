@@ -40,7 +40,7 @@ struct GameView: View {
         case 3:
             return "The finish is hidden too. Find it by sound and touch."
         default:
-            return "Drag the ball directly or hold the joystick gently. " +
+            return "Use the joystick to move the ball slowly. " +
                 "Wall sounds grow louder as you approach. " +
                 "Touching a wall returns the ball to the start."
         }
@@ -80,6 +80,9 @@ struct GameView: View {
                     SpriteView(scene: gameScene, transition: nil)
                         .frame(width: mazeSide, height: mazeSide)
                         .clipped()
+                        // Only the joystick controls motion. The maze is visual
+                        // feedback and never captures direct drag gestures.
+                        .allowsHitTesting(false)
                         .accessibilityHidden(true)
                 }
 
