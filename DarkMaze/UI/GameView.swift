@@ -126,8 +126,8 @@ struct GameView: View {
                 }
                 .accessibilityHint("Exit the current maze")
             }
-            if appState.tutorialStage == nil {
-                ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if appState.tutorialStage == nil {
                     Button("Reset") { appState.gameID = UUID() }
                         .accessibilityHint("Restart this maze from the beginning")
                 }
