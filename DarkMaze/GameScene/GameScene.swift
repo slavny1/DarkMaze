@@ -16,7 +16,6 @@ final class GameScene: SKScene {
 
     private var appState: AppState
 
-    private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
     private var mazeTiles: [[UInt8]] = []
     private var tileWidth: CGFloat = 0
@@ -158,15 +157,13 @@ final class GameScene: SKScene {
     }
 
     private var ballRadius: CGFloat { tileWidth * 0.12 }
-    private var touchIsDragging = false
     private var joystickNeedsRelease = false
-    private var ballFoundDuringTouch = false
 
     /// Informs the SwiftUI joystick to return to neutral after a collision.
     var onCollision: (() -> Void)?
 
     /// Apply a small displacement in scene points rather than whole tiles.
-    /// Both the touch gesture and the joystick share this collision logic.
+    /// The joystick and VoiceOver actions share this collision logic.
     func moveBall(by displacement: CGVector) {
         guard !gameFinished, !joystickNeedsRelease, ball != nil else { return }
         let distance = hypot(displacement.dx, displacement.dy)
@@ -256,14 +253,17 @@ final class GameScene: SKScene {
             x: mazeOffset + CGFloat(goal.column) * tileWidth,
             y: mazeOffset + CGFloat(goal.row) * tileWidth
         )
-        return hypot(point.x - goalPosition.x, point.y - goalPosition.y) < tileWidth * 0.32
+        // Finish immediately when the edge of the ball first intersects
+        // the goal square, rather than waiting to reach its centre.
+        let halfTile = tileWidth / 2
+        let deltaX = max(abs(point.x - goalPosition.x) - halfTile, 0)
+        let deltaY = max(abs(point.y - goalPosition.y) - halfTile, 0)
+        return hypot(deltaX, deltaY) <= ballRadius
     }
 
     private func resetAfterCollision() {
         guard !gameFinished else { return }
         joystickNeedsRelease = true
-        touchIsDragging = false
-        lastTouchLocation = nil
         stopMovementSound()
         HapticManager.collisionOccurred()
         run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
@@ -335,57 +335,6 @@ final class GameScene: SKScene {
             appState.topLevel = appState.gameLevel.nextLevel()
         }
         appState.state = .win
-    }
-
-    // MARK: Direct touch dragging
-
-    private func trySelectBall(at point: CGPoint) {
-        let selectionRadius = max(ballRadius * 2.5, 30)
-        guard !touchIsDragging, !ballFoundDuringTouch,
-              hypot(point.x - ball.position.x, point.y - ball.position.y) <= selectionRadius else {
-            return
-        }
-        ballFoundDuringTouch = true
-        lastTouchLocation = point
-        touchIsDragging = true
-        joystickNeedsRelease = false
-        HapticManager.ballTouched()
-        run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
-        beginMovementSound()
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard !gameFinished, let touch = touches.first else { return }
-        let point = touch.location(in: fatherTile)
-        ballFoundDuringTouch = false
-        trySelectBall(at: point)
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let position = touch.location(in: fatherTile)
-        if !touchIsDragging {
-            // Finger-sweep exploration: announce discovery only when the
-            // finger reaches the ball, without revealing its coordinates.
-            trySelectBall(at: position)
-            return
-        }
-        guard let previous = lastTouchLocation else { return }
-        lastTouchLocation = position
-        moveBall(by: CGVector(dx: position.x - previous.x,
-                              dy: position.y - previous.y))
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touchIsDragging = false
-        lastTouchLocation = nil
-        ballFoundDuringTouch = false
-        joystickNeedsRelease = false
-        stopMovementSound()
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touchesEnded(touches, with: event)
     }
 
     // MARK: Collisions
