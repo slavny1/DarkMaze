@@ -18,9 +18,9 @@ struct LottieView: UIViewRepresentable {
         let view = UIView()
 
         animationView.animation = LottieAnimation.named(name)
-        animationView.contentMode = .scaleAspectFill
-        animationView.play()
+        animationView.contentMode = .scaleAspectFit
         animationView.loopMode = loop
+        animationView.play()
         animationView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(animationView)
 
