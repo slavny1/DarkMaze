@@ -39,14 +39,9 @@ struct LevelsListView: View {
                 Button {
                     appState.state = .main
                 } label: {
-                    HStack {
-                        Image(systemName: "chevron.backward")
-                            .foregroundColor(.white)
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        Text("Main")
-                            .foregroundColor(.white)
-                            .font(.system(size: 18, weight: .black, design: .monospaced))
-                    }
+                    Text("Main")
+                        .foregroundColor(.white)
+                        .font(.system(size: 18, weight: .black, design: .monospaced))
                 }
             }
         }

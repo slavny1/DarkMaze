@@ -2,53 +2,140 @@
 //  TabOnboardingView.swift
 //  DarkMaze
 //
-//  Created by Viacheslav on 15/06/23.
+//  Restores the original illustrated introduction and animated character.
 //
 
 import SwiftUI
+import UIKit
 
 struct TabOnboardingView: View {
+    @EnvironmentObject private var appState: AppState
     @State private var currentTab = 0
 
-    private let list: [OnboardingData] = [
-        OnboardingData(id: 0, primaryText: "Welcome to Dark Maze", secondaryText: "An immersive game for visually impaired individuals"),
-        OnboardingData(id: 1, primaryText: "Explore complex Mazes", secondaryText: "Engage all your senses beyond vision"),
-        OnboardingData(id: 2, primaryText: "Turn on sounds and haptic", secondaryText: "It's essential features for navigating through the Maze")
+    // The same three illustrated story beats as the original onboarding.
+    private let pages: [OnboardingData] = [
+        OnboardingData(
+            id: 0,
+            primaryText: "Welcome to Dark Maze",
+            secondaryText: "An immersive game designed for blind and low-vision players."
+        ),
+        OnboardingData(
+            id: 1,
+            primaryText: "Explore complex mazes",
+            secondaryText: "Engage your senses beyond vision."
+        ),
+        OnboardingData(
+            id: 2,
+            primaryText: "Listen and feel",
+            secondaryText: "Use sound and haptic feedback to find your way."
+        )
     ]
 
     var body: some View {
-        ZStack {
-            TabView(selection: $currentTab,
-                    content: {
-                ForEach(list) { viewData in
-                    OnboardingView(data: viewData)
-                        .tag(viewData.id)
-                }
-            })
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            VStack {
-                Spacer()
+        GeometryReader { geometry in
+            VStack(spacing: 12) {
+                Spacer(minLength: 0)
+
+                // The original hello.json Lottie character stays animated
+                // across all pages instead of replacing it with text only.
                 LottieView(name: "hello", loop: .loop)
-                    .frame(width: 350, height: 350)
-                    .padding(.bottom, 300)
-                HStack(spacing: 15) {
-                    ForEach(list.indices, id: \.self) { index in
-                        Capsule()
-                            .fill(Color.white)
-                            .frame(width: currentTab == index ? 20 : 7, height: 7)
+                    .frame(width: min(geometry.size.width - 32, 350),
+                           height: max(155, min(geometry.size.height * 0.36, 300)))
+                    .accessibilityHidden(true)
+
+                TabView(selection: $currentTab) {
+                    ForEach(pages) { data in
+                        VStack(spacing: 10) {
+                            Text(data.primaryText)
+                                .font(.system(size: 24, weight: .black, design: .monospaced))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.white)
+                                .accessibilityAddTraits(.isHeader)
+                                .accessibilityLabel(
+                                    "\(data.primaryText). Page \(data.id + 1) of \(pages.count)"
+                                )
+
+                            Text(data.secondaryText)
+                                .font(.system(size: 16, weight: .medium, design: .monospaced))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.white)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.horizontal, 12)
+                        .tag(data.id)
                     }
                 }
-                .padding(.bottom, 50)
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .frame(height: 132)
+                .onChange(of: currentTab) { page in
+                    if UIAccessibility.isVoiceOverRunning {
+                        UIAccessibility.post(
+                            notification: .pageScrolled,
+                            argument: "Page \(page + 1) of \(pages.count). \(pages[page].primaryText)"
+                        )
+                    }
+                }
+
+                Spacer(minLength: 0)
+
+                // Keep actions in the same slot to prevent page layout shifts.
+                // A single Next button becomes two destinations on page three.
+                VStack(spacing: 12) {
+                    if currentTab < pages.count - 1 {
+                        squareButton("Next", primary: true) {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                currentTab += 1
+                            }
+                        }
+                        .accessibilityHint("Continue to the next introduction page")
+                    } else {
+                        squareButton("Start tutorial", primary: true) {
+                            appState.startTutorial()
+                        }
+                        .accessibilityHint("Begin the four-stage guided tutorial")
+
+                        squareButton("Main menu") {
+                            appState.isOnboarding = false
+                            appState.state = .main
+                        }
+                        .accessibilityHint("Skip the tutorial and open the main menu")
+                    }
+                }
+                .frame(height: 104, alignment: .bottom)
+
+                Spacer(minLength: 12)
+
+                // Page dots remain anchored to the bottom, below all buttons.
+                HStack(spacing: 12) {
+                    ForEach(pages.indices, id: \.self) { index in
+                        Capsule()
+                            .fill(index == currentTab ? Color.white : Color.gray)
+                            .frame(width: index == currentTab ? 22 : 7, height: 7)
+                    }
+                }
+                .accessibilityHidden(true)
+                .padding(.bottom, 20)
             }
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
-}
 
-struct TabOnboardingView_Previews: PreviewProvider {
-    static var previews: some View {
-        TabOnboardingView()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black)
-            .ignoresSafeArea()
+    private func squareButton(
+        _ title: String,
+        primary: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 16, weight: .bold, design: .monospaced))
+                .foregroundColor(primary ? .black : .white)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, minHeight: 46)
+                .background(primary ? Color.white : Color.black)
+                .overlay(Rectangle().stroke(.white, lineWidth: primary ? 0 : 2))
+        }
+        .buttonStyle(.plain)
+
     }
 }

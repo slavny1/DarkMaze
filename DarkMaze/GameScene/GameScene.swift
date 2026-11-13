@@ -16,13 +16,16 @@ final class GameScene: SKScene {
 
     private var appState: AppState
 
-    private var lastTouchLocation: CGPoint?
     private var initialPosition: CGPoint? // position for ball
+    private var mazeTiles: [[UInt8]] = []
+    private var tileWidth: CGFloat = 0
+    private var mazeOffset: CGFloat = 0
+    private var goal: (row: Int, column: Int) = (0, 0)
+    private var gameFinished = false
 
-    private let sizeConst: CGFloat = UIScreen.main.bounds.width - 2 * Constants.borderLineWidth
-
-    private var closestDistance: CGFloat = CGFloat.infinity //
-    private var distanceToNode: CGFloat? // standart distance from ball to node
+    private var sizeConst: CGFloat {
+        min(size.width, size.height) - 2 * Constants.borderLineWidth
+    }
 
     private var ball: SKShapeNode!
     var fatherTile: SKShapeNode!
@@ -48,9 +51,11 @@ final class GameScene: SKScene {
     }
 
     override func didMove(to view: SKView) {
+        guard fatherTile == nil else { return }
         createFather()
         createMaze()
         createBall()
+        updateVisibility()
         audioPlayer = AudioManager()
 
         physicsWorld.gravity = .zero
@@ -69,24 +74,27 @@ final class GameScene: SKScene {
     // MARK: Maze creation
 
     private func createMaze() {
-        let mazeLevelOne = MazeLibrary.randomMaze(level: appState.gameLevel)
+        if let stage = appState.tutorialStage {
+            let tutorial = MazeLibrary.tutorialMaze(stage: stage)
+            mazeTiles = tutorial.tiles
+            goal = tutorial.goal
+        } else {
+            mazeTiles = MazeLibrary.randomMaze(level: appState.gameLevel)
+            goal = (mazeTiles.count - 1, mazeTiles.count - 1)
+        }
 
-        // Define size of a tile
-        let tileWidth = sizeConst / CGFloat(mazeLevelOne.count)
-
-        // Define an offset for the first tile in a maze
-        let mazeOffset = tileWidth / 2 - sizeConst / 2 + Constants.borderLineWidth
+        // Square cells and deterministic start/goal for the tutorial.
+        tileWidth = sizeConst / CGFloat(mazeTiles.count)
+        mazeOffset = tileWidth / 2 - sizeConst / 2 + Constants.borderLineWidth
+        let mazeLevelOne = mazeTiles
 
         // Set a position for the ball
         initialPosition = CGPoint(x: mazeOffset, y: mazeOffset)
 
-        // Define distance from ball to the center of node
-        distanceToNode = CGFloat(tileWidth / 2)
-
         for row in 0..<mazeLevelOne.count {
             for column in 0..<mazeLevelOne[row].count {
                 let tile = TileNode(rectOf: .init(width: tileWidth, height: tileWidth))
-                tile.type = appState.blindMode ? .black : .gray
+                tile.type = .gray
 
                 // define position of a tile
                 tile.position = CGPoint(x: mazeOffset + CGFloat(column) * tileWidth,
@@ -103,7 +111,7 @@ final class GameScene: SKScene {
                 }
 
                 // For the last tile -- WIN
-                if (row == mazeLevelOne.count - 1) && (column == mazeLevelOne[row].count - 1) {
+                if row == goal.row && column == goal.column {
                     tile.type = .win
                     tile.physicsBody = SKPhysicsBody(rectangleOf: tile.frame.size)
                     tile.physicsBody?.isDynamic = true
@@ -117,114 +125,214 @@ final class GameScene: SKScene {
     }
 
     private func createBall() {
-        // In the future radius should change dependig on size of a tile and maze
-        ball = SKShapeNode(circleOfRadius: fatherTile.frame.width / 20)
+        // Keep the ball smaller than a corridor for precise wall exploration.
+        let radius = tileWidth * 0.12
+        ball = SKShapeNode(circleOfRadius: radius)
         ball.fillColor = .white
-        // Ball's ohysics body will change too depending on complexity of game (the more the harder)
-        ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.width / 10)
-        ball.physicsBody?.isDynamic = true
-        ball.physicsBody?.categoryBitMask = PhysicsCategory.ball
-        ball.physicsBody?.contactTestBitMask = PhysicsCategory.block | PhysicsCategory.win
-        ball.physicsBody?.collisionBitMask = PhysicsCategory.none
-        ball.position = initialPosition!
+        ball.strokeColor = .white
+        ball.alpha = appState.hideBall ? 0 : 1
+        ball.position = initialPosition ?? .zero
         fatherTile.addChild(ball)
+        updateWallSound()
     }
 
-    // MARK: Touches
+    /// Visibility never affects wall detection, sound, or win logic.
+    func updateVisibility() {
+        guard fatherTile != nil, ball != nil else { return }
+        for case let tile as TileNode in fatherTile.children {
+            switch tile.type {
+            case .wall:
+                tile.fillColor = .black
+                tile.strokeColor = appState.blindMode ? .black : .white
+            case .win:
+                tile.fillColor = appState.hideFinish ?
+                    (appState.blindMode ? .black : .gray) : .white
+                tile.strokeColor = appState.blindMode ? .black : .white
+            default:
+                tile.fillColor = appState.blindMode ? .black : .gray
+                tile.strokeColor = appState.blindMode ? .black : .white
+            }
+        }
+        ball.alpha = appState.hideBall ? 0 : 1
+    }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let touchLocation = touch.location(in: fatherTile)
-        if ball.frame.contains(touchLocation) {
-            lastTouchLocation = touchLocation
-            print("Ball tapped")
-            HapticManager.ballTouched()
-            audioPlayer?.moveSound(volume: volume)
+    private var ballRadius: CGFloat { tileWidth * 0.12 }
+    private var joystickNeedsRelease = false
+
+    /// Informs the SwiftUI joystick to return to neutral after a collision.
+    var onCollision: (() -> Void)?
+
+    /// Apply a small displacement in scene points rather than whole tiles.
+    /// The joystick and VoiceOver actions share this collision logic.
+    func moveBall(by displacement: CGVector) {
+        guard !gameFinished, !joystickNeedsRelease, ball != nil else { return }
+        let distance = hypot(displacement.dx, displacement.dy)
+        guard distance > 0 else { return }
+
+        // Substeps prevent a quick finger movement from tunnelling through walls.
+        let segmentLength = max(ballRadius * 0.45, 1)
+        let steps = max(1, Int(ceil(distance / segmentLength)))
+        let delta = CGVector(dx: displacement.dx / CGFloat(steps),
+                             dy: displacement.dy / CGFloat(steps))
+        for _ in 0..<steps {
+            let candidate = CGPoint(x: ball.position.x + delta.dx,
+                                    y: ball.position.y + delta.dy)
+            if isBlocked(at: candidate) {
+                resetAfterCollision()
+                return
+            }
+            ball.position = candidate
+            if isGoal(at: candidate) {
+                finishLevel()
+                return
+            }
+        }
+        updateWallSound()
+    }
+
+    /// VoiceOver action makes a *short* nudge, never jumps a full cell.
+    func nudgeBall(horizontal: Int, vertical: Int) {
+        guard abs(horizontal) + abs(vertical) == 1 else { return }
+        joystickNeedsRelease = false
+        moveBall(by: CGVector(dx: CGFloat(horizontal) * tileWidth * 0.08,
+                              dy: CGFloat(vertical) * tileWidth * 0.08))
+        if !joystickNeedsRelease && !gameFinished {
+            HapticManager.ballMoving()
+            audioPlayer?.playStepCue(volume: proximityVolume())
         }
     }
 
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-
-        let touchLocation = touch.location(in: fatherTile)
-
-        // define closest distance as closest black tile to ball
-        closestDistance = closestBlackTile(to: ball)
-
-        // change volume depends on a distance from the edge or black tile 
-        // (const 10 is for reducing volume of moving ball compare with collision sounds)
-        // if wall or edge more than half tile size volume is constant
-        volume = closestDistance < distanceToNode! ? Float((distanceToNode! - closestDistance) / 20) : 0.01
-        audioPlayer?.updateVolume(volume: volume)
-        // I need this for a haptic feedback in order to find ball at the first play. User can scan maze with finger and find where the ball is.
-        if lastTouchLocation == nil && ball.frame.contains(touchLocation) {
-            HapticManager.ballTouched()
-            //            run(SKAction.playSoundFileNamed("bonus.mp3", waitForCompletion: false))
-            //            audioPlayer?.play()
-        }
-        guard lastTouchLocation != nil else { return }
-
-        // if ball whent of edges of the maze more than a half
-        guard ball.position.x > -fatherTile.frame.width / 2,
-              ball.position.y > -fatherTile.frame.height / 2,
-              ball.position.x < fatherTile.frame.width / 2,
-              ball.position.y < fatherTile.frame.height / 2 else {
-            // return ball to the initial position in case it fell out of the border
-            ball.position = initialPosition!
-            HapticManager.collisionOccurred()
-            run(SKAction.playSoundFileNamed("edge.mp3", waitForCompletion: false))
-            lastTouchLocation = nil
+    /// The joystick calls this from its display timer.
+    func steer(horizontal: CGFloat, vertical: CGFloat, deltaTime: CGFloat) {
+        guard !joystickNeedsRelease, !gameFinished else { return }
+        let magnitude = hypot(horizontal, vertical)
+        guard magnitude > 0.04 else {
+            // The joystick is physically centred: stop motion and its
+            // continuous movement cue immediately.
+            stopMovementSound()
             return
         }
-
-        // Ball moving
-        HapticManager.ballMoving()
-        ball.position = touchLocation
+        beginMovementSound()
+        let factor = min(magnitude, 1)
+        // About 0.8 cell per second at full deflection; less when gently held.
+        let speed = tileWidth * 0.8 * factor
+        moveBall(by: CGVector(dx: horizontal / magnitude * speed * deltaTime,
+                              dy: vertical / magnitude * speed * deltaTime))
     }
 
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        audioPlayer?.stopAudio()
-        lastTouchLocation = nil
-        print(closestDistance)
+    func releaseJoystick() {
+        joystickNeedsRelease = false
+        stopMovementSound()
     }
 
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    private func isBlocked(at point: CGPoint) -> Bool {
+        // A wall is hit only when the ball's centre reaches its tile.
+        // Let its outer edge overlap the wall without resetting the level.
+        guard tileWidth > 0 else { return true }
+        let gridOrigin = mazeOffset - tileWidth / 2
+        let column = Int(floor((point.x - gridOrigin) / tileWidth))
+        let row = Int(floor((point.y - gridOrigin) / tileWidth))
+        guard mazeTiles.indices.contains(row),
+              mazeTiles[row].indices.contains(column) else { return true }
+        return mazeTiles[row][column] == 0
+    }
 
-        audioPlayer?.stopAudio()
-        lastTouchLocation = nil
+    private func isGoal(at point: CGPoint) -> Bool {
+        let goalPosition = CGPoint(
+            x: mazeOffset + CGFloat(goal.column) * tileWidth,
+            y: mazeOffset + CGFloat(goal.row) * tileWidth
+        )
+        // Finish immediately when the edge of the ball first intersects
+        // the goal square, rather than waiting to reach its centre.
+        let halfTile = tileWidth / 2
+        let deltaX = max(abs(point.x - goalPosition.x) - halfTile, 0)
+        let deltaY = max(abs(point.y - goalPosition.y) - halfTile, 0)
+        return hypot(deltaX, deltaY) <= ballRadius
+    }
+
+    private func resetAfterCollision() {
+        guard !gameFinished else { return }
+        joystickNeedsRelease = true
+        stopMovementSound()
+        HapticManager.collisionOccurred()
+        run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
+        ball.position = initialPosition ?? .zero
+        onCollision?()
+    }
+
+    private func beginMovementSound() {
+        if !isMovementSoundPlaying {
+            audioPlayer?.moveSound(volume: 0.01)
+            isMovementSoundPlaying = true
+        }
+        updateWallSound()
+    }
+
+    private var isMovementSoundPlaying = false
+    private var lastWallHaptic = Date.distantPast
+
+    private func updateWallSound() {
+        guard isMovementSoundPlaying, ball != nil else { return }
+        let closeness = wallCloseness()
+        audioPlayer?.updateVolume(volume: proximityVolume())
+
+        // Begin with very soft pulses shortly after leaving the corridor
+        // centre. Their strength and frequency ramp up toward the wall.
+        // No spoken navigation cues or haptics at the exact centre.
+        if closeness >= 0.18 {
+            let progress = (closeness - 0.18) / 0.82
+            let response = pow(progress, 1.3)
+            let interval = 0.72 - Double(response) * 0.55
+            let now = Date()
+            if now.timeIntervalSince(lastWallHaptic) >= interval {
+                HapticManager.wallProximity(intensity: 0.1 + response * 0.9)
+                lastWallHaptic = now
+            }
+        }
+    }
+
+    private func wallCloseness() -> CGFloat {
+        guard ball != nil, tileWidth > 0 else { return 0 }
+        // Subtract ball radius: measure the gap between its edge and a wall.
+        // Corridor centre (~0.38 tile clearance) is intentionally silent.
+        let clearance = max(0, closestBlackTile(to: ball) - ballRadius)
+        let soundRange = tileWidth * 0.36
+        return max(0, min(1, (soundRange - clearance) / soundRange))
+    }
+
+    private func proximityVolume() -> Float {
+        let closeness = wallCloseness()
+        return Float(0.005 + closeness * closeness * 0.7)
+    }
+
+    private func stopMovementSound() {
+        if isMovementSoundPlaying {
+            audioPlayer?.stopAudio()
+            isMovementSoundPlaying = false
+        }
+    }
+
+    private func finishLevel() {
+        guard !gameFinished else { return }
+        gameFinished = true
+        stopMovementSound()
+        HapticManager.ballWin()
+        run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
+        if appState.tutorialStage == nil,
+           appState.topLevel <= appState.gameLevel,
+           appState.topLevel < appState.gameLevel.lastLevel {
+            appState.topLevel = appState.gameLevel.nextLevel()
+        }
+        appState.state = .win
     }
 
     // MARK: Collisions
 
     func ballCollideWithBlock(ball: SKShapeNode, block: SKShapeNode) {
-        print("Collision detected")
-        ball.removeFromParent()
-        block.fillColor = .red
-
-        // Delay the execution of the color revert by one second
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-            // Revert the block color back to the original color
-            block.fillColor = .black
-        }
-        
-        HapticManager.collisionOccurred()
-
-        audioPlayer?.stopAudio()
-        run(SKAction.playSoundFileNamed("wall.mp3", waitForCompletion: false))
-        lastTouchLocation = nil
-        print(closestDistance)
-        createBall()
+        resetAfterCollision()
     }
 
     func ballCollideWithWin(ball: SKShapeNode, block: SKShapeNode) {
-        audioPlayer?.stopAudio()
-        HapticManager.ballWin()
-        run(SKAction.playSoundFileNamed("win.mp3", waitForCompletion: false))
-//        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-        if (appState.topLevel <= appState.gameLevel) && appState.topLevel < appState.gameLevel.lastLevel {
-            appState.topLevel = appState.gameLevel.nextLevel()
-//            appState.topLevel = .one
-        }
-        appState.state = .win
+        finishLevel()
     }
 }

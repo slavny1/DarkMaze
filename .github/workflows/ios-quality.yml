@@ -1,0 +1,38 @@
+name: DarkMaze iOS checks
+
+on:
+  push:
+    branches:
+      - "release/**"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  maze-tests:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show toolchain
+        run: swift --version
+      - name: Run production maze validation
+        run: bash scripts/test-maze.sh
+
+  simulator-build:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check available Xcode
+        run: xcodebuild -version
+      - name: Build unsigned for iPhone Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project DarkMaze.xcodeproj \
+            -scheme DarkMaze \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$RUNNER_TEMP/DarkMazeDerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build

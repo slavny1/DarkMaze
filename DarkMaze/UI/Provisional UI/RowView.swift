@@ -15,7 +15,7 @@ struct RowView: View {
     var body: some View {
 
             HStack {
-                Text("Level \(String(level.rawValue))")
+                Text("Level \(String(level.rawValue + 1))")
                     .foregroundColor(isAvailable ? .white : .gray)
                     .font(.system(size: 18, weight: .black, design: .monospaced))
                 Spacer()
