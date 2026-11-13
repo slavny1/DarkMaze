@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct TabOnboardingView: View {
     @EnvironmentObject private var appState: AppState
@@ -50,6 +51,9 @@ struct TabOnboardingView: View {
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.white)
                                 .accessibilityAddTraits(.isHeader)
+                                .accessibilityLabel(
+                                    "\(data.primaryText). Page \(data.id + 1) of \(pages.count)"
+                                )
 
                             Text(data.secondaryText)
                                 .font(.system(size: 16, weight: .medium, design: .monospaced))
@@ -63,7 +67,45 @@ struct TabOnboardingView: View {
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(height: 132)
+                .onChange(of: currentTab) { page in
+                    if UIAccessibility.isVoiceOverRunning {
+                        UIAccessibility.post(
+                            notification: .pageScrolled,
+                            argument: "Page \(page + 1) of \(pages.count). \(pages[page].primaryText)"
+                        )
+                    }
+                }
 
+                Spacer(minLength: 0)
+
+                // Keep actions in the same slot to prevent page layout shifts.
+                // A single Next button becomes two destinations on page three.
+                VStack(spacing: 12) {
+                    if currentTab < pages.count - 1 {
+                        squareButton("Next", primary: true) {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                currentTab += 1
+                            }
+                        }
+                        .accessibilityHint("Continue to the next introduction page")
+                    } else {
+                        squareButton("Start tutorial", primary: true) {
+                            appState.startTutorial()
+                        }
+                        .accessibilityHint("Begin the four-stage guided tutorial")
+
+                        squareButton("Main menu") {
+                            appState.isOnboarding = false
+                            appState.state = .main
+                        }
+                        .accessibilityHint("Skip the tutorial and open the main menu")
+                    }
+                }
+                .frame(height: 104, alignment: .bottom)
+
+                Spacer(minLength: 12)
+
+                // Page dots remain anchored to the bottom, below all buttons.
                 HStack(spacing: 12) {
                     ForEach(pages.indices, id: \.self) { index in
                         Capsule()
@@ -72,25 +114,7 @@ struct TabOnboardingView: View {
                     }
                 }
                 .accessibilityHidden(true)
-                .padding(.bottom, 6)
-
-                // The first two pages are explored by swiping.
-                // Only the final page offers destinations.
-                VStack(spacing: 12) {
-                    if currentTab == pages.count - 1 {
-                        squareButton("Start tutorial", primary: true) {
-                            appState.startTutorial()
-                        }
-
-                        squareButton("Main menu") {
-                            appState.isOnboarding = false
-                            appState.state = .main
-                        }
-                    }
-                }
-                .frame(height: 104)
-
-                Spacer(minLength: 0)
+                .padding(.bottom, 20)
             }
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -112,6 +136,6 @@ struct TabOnboardingView: View {
                 .overlay(Rectangle().stroke(.white, lineWidth: primary ? 0 : 2))
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Onboarding page \(currentTab + 1) of \(pages.count)")
+
     }
 }
