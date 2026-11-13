@@ -74,27 +74,21 @@ struct TabOnboardingView: View {
                 .accessibilityHidden(true)
                 .padding(.bottom, 6)
 
-                if currentTab < pages.count - 1 {
-                    squareButton("Next", primary: true) {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            currentTab += 1
+                // The first two pages are explored by swiping.
+                // Only the final page offers destinations.
+                VStack(spacing: 12) {
+                    if currentTab == pages.count - 1 {
+                        squareButton("Start tutorial", primary: true) {
+                            appState.startTutorial()
+                        }
+
+                        squareButton("Main menu") {
+                            appState.isOnboarding = false
+                            appState.state = .main
                         }
                     }
-                } else {
-                    squareButton("Explore sounds and vibrations", primary: true) {
-                        appState.isOnboarding = false
-                        appState.state = .signals
-                    }
                 }
-
-                squareButton("Start guided tutorial") {
-                    appState.startTutorial()
-                }
-
-                squareButton("Skip to main menu") {
-                    appState.isOnboarding = false
-                    appState.state = .main
-                }
+                .frame(height: 104)
 
                 Spacer(minLength: 0)
             }
